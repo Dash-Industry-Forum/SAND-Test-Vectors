@@ -12,11 +12,13 @@ class TestPerMessages(unittest.TestCase):
       for message in glob.glob("../per/*-OK-*.xml"):
         sand_message = etree.parse(message)
         self.assertTrue(self.sand_schema.validate(sand_message))
+        print "Test succesful : " + message
   
   def test_invalid_messages(self):
       for message in glob.glob("../per/*-KO-*.xml"):
         sand_message = etree.parse(message)
         self.assertFalse(self.sand_schema.validate(sand_message))
+        print "Test succesful : " + message
   
 if __name__ == '__main__':
       unittest.main()
