@@ -4,7 +4,6 @@
   attributeFormDefault="unqualified"
   elementFormDefault="qualified"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:mpd="urn:mpeg:dash:schema:mpd:2011"
   xmlns="urn:mpeg:dash:schema:sandmessage:2015">
   <!-- future xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1" -->
 
@@ -14,8 +13,6 @@
       This Schema defines the Server And Network Assisted DASH (SAND) messages for MPEG-DASH.
     </xs:documentation>
   </xs:annotation>
-
-  <xs:import namespace="urn:mpeg:dash:schema:mpd:2011" schemaLocation="mpd.xsd"/>
 
   <!-- SAND message: main element -->
   <xs:element name="SANDMessage" type="SANDEnvelopeType"/>
@@ -183,7 +180,7 @@
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
       <xs:sequence>
-        <xs:element ref="mpd:MPD" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="mpd" type="xs:string" minOccurs="0" maxOccurs="1"/>
       </xs:sequence>
       <xs:attribute name="mpdID" type="xs:string"/>
       <xs:attribute name="publishTime" type="xs:dateTime"/>
