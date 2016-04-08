@@ -34,6 +34,7 @@
       <xs:element name="AvailabilityTimeOffset" type="AvailabilityTimeOffsetType"/>
       <xs:element name="QoSInformation" type="QoSInformationType"/>
       <!-- DeliveredAlternative is not allowed in XML, only in HTTP headers -->
+      <xs:element name="DaneCapabilities" type="DaneCapabilitiesType"/>
       <xs:element name="BwInformation" type="BwInformationType"/>
       <!-- ISO/ISC 23009-5 Annex D DASH metrics -->
       <xs:element name="TcpList" type="TcpListType"/>
@@ -119,6 +120,7 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  
   <!-- NextAlternatives Type -->
   <xs:complexType name="NextAlternativesType">
     <xs:complexContent>
@@ -136,6 +138,7 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  
   <!-- ClientCapabilities Type -->
   <xs:complexType name="ClientCapabilitiesType">
     <xs:complexContent>
@@ -151,6 +154,7 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
+  
   <!-- ResourceStatus Type -->
   <xs:complexType name="ResourceStatusType">
     <xs:complexContent>
@@ -164,7 +168,7 @@
     </xs:complexContent>
   </xs:complexType>
 
-<!-- ResourceStatus status enumeration -->
+  <!-- ResourceStatus status enumeration -->
   <xs:simpleType name="ResourceStatusTypeStatusType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="available"/>
@@ -173,7 +177,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-<!-- DaneResourceStatus Type -->
+  <!-- DaneResourceStatus Type -->
   <xs:complexType name="DaneResourceStatusType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -206,7 +210,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-<!-- SharedResourceAssignment Type -->
+  <!-- SharedResourceAssignment Type -->
   <xs:complexType name="SharedResourceAssignmentType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -217,7 +221,7 @@
     </xs:complexContent>
   </xs:complexType>
 
-<!-- MPDValidityEndTime Type -->
+  <!-- MPDValidityEndTime Type -->
   <xs:complexType name="MPDValidityEndTimeType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -232,7 +236,7 @@
     </xs:complexContent>
   </xs:complexType>
 
-<!-- Throughput Type -->
+  <!-- Throughput Type -->
   <xs:complexType name="ThroughputType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -253,7 +257,7 @@
     </xs:restriction>
   </xs:simpleType>
 
-<!-- AvailabilityTimeOffset Type -->
+  <!-- AvailabilityTimeOffset Type -->
   <xs:complexType name="AvailabilityTimeOffsetType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -265,7 +269,7 @@
     </xs:complexContent>
   </xs:complexType>
 
-<!-- QoSInformation Type -->
+  <!-- QoSInformation Type -->
   <xs:complexType name="QoSInformationType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -276,7 +280,8 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-<!-- DaneCapabilities Type -->
+
+  <!-- DaneCapabilities Type -->
   <xs:complexType name="DaneCapabilitiesType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -292,7 +297,7 @@
     </xs:complexContent>
   </xs:complexType>
 
-<!-- BwInformation Type -->
+  <!-- BwInformation Type -->
   <xs:complexType name="BwInformationType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -303,14 +308,14 @@
     </xs:complexContent>
   </xs:complexType>
 
-<!-- String without white spaces, same as MPD schema -->
+  <!-- String without white spaces, same as MPD schema -->
   <xs:simpleType name="StringNoWhitespaceType">
     <xs:restriction base="xs:string">
       <xs:pattern value="[^\r\n\t \p{Z}]*"/>
     </xs:restriction>
   </xs:simpleType>
 
-<!-- Metrics as defined in Annex D of ISO/IEC 23009-1 -->
+  <!-- Metrics as defined in Annex D of ISO/IEC 23009-1 -->
   <!-- NOTE the naming convention complies with the keys defined in Annex D
        and with camelCase convention like the rest of the schema -->
 
