@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
-  targetNamespace="urn:mpeg:dash:schema:sandmessage:2015"
+  targetNamespace="urn:mpeg:dash:schema:sandmessage:2016"
   attributeFormDefault="unqualified"
   elementFormDefault="qualified"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns="urn:mpeg:dash:schema:sandmessage:2015">
+  xmlns="urn:mpeg:dash:schema:sandmessage:2016">
   <!-- future xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1" -->
 
   <xs:annotation>
@@ -25,6 +25,7 @@
       <xs:element name="AcceptedAlternatives" type="AcceptedAlternativesType"/>
       <!-- AbsoluteDeadline is not allowed in XML, only in HTTP headers -->
       <xs:element name="MaxRTT" type="MaxRTTType"/>
+      <xs:element name="NextAlternatives" type="NextAlternativesType"/>
       <xs:element name="ResourceStatus" type="ResourceStatusType"/>
       <xs:element name="DaneResourceStatus" type="DaneResourceStatusType"/>
       <xs:element name="SharedResourceAssignment" type="SharedResourceAssignmentType"/>
@@ -118,8 +119,39 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-
-<!-- ResourceStatus Type -->
+  <!-- NextAlternatives Type -->
+  <xs:complexType name="NextAlternativesType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="Alternative" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="sourceURL" type="xs:anyURI" use="required"/>
+            <xs:attribute name="range" type="xs:string"/>
+            <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
+            <xs:attribute name="deliveryScope" type="xs:unsignedInt"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!-- ClientCapabilities Type -->
+  <xs:complexType name="ClientCapabilitiesType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="SupportedMessage" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="messageType" type="xs:unsignedInt" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="messageSetUri" type="xs:anyURI"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <!-- ResourceStatus Type -->
   <xs:complexType name="ResourceStatusType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
@@ -146,12 +178,22 @@
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
       <xs:sequence>
-        <xs:element name="resource" type="xs:anyURI" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="resource" type="ResourceType" minOccurs="0" maxOccurs="unbounded"/>
         <xs:element name="resourceGroup" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute name="status" type="DaneResourceStatusTypeStatusType" use="required"/>
     </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+
+<!-- Resource Type -->
+  <xs:complexType name="ResourceType">
+    <xs:simpleContent>
+      <xs:extension base="xs:anyURI">
+        <xs:attribute name="bytes" type="xs:string"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:extension>
+    </xs:simpleContent>
   </xs:complexType>
 
 <!-- DaneResourceStatus status enumeration -->
@@ -231,6 +273,21 @@
       <xs:attribute name="mbr" type="xs:unsignedInt"/>
       <xs:attribute name="delay" type="xs:unsignedInt"/>
       <xs:attribute name="pl" type="xs:unsignedInt"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+<!-- DaneCapabilities Type -->
+  <xs:complexType name="DaneCapabilitiesType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="SupportedMessage" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="messageType" type="xs:unsignedInt" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="messageSetUri" type="xs:anyURI"/>
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
