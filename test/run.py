@@ -14,7 +14,7 @@ class TestPerMessages(unittest.TestCase):
         self.assertTrue(self.sand_schema.validate(sand_message))
   
   def test_invalid_messages(self):
-      for per in glob.glob("../per/*-KO-*.xml"):
+      for message in glob.glob("../per/*-KO-*.xml"):
         sand_message = etree.parse(message)
         self.assertFalse(self.sand_schema.validate(sand_message))
   
