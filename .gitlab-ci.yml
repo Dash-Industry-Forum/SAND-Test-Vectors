@@ -2,5 +2,5 @@ test:
   script:
   - apt-get update -qy
   - apt-get install -y python-dev python-pip
-  - cd test/ && pip install -r requirements.txt
+  - cd tests/ && pip install -r requirements.txt
   - python run.py -v
