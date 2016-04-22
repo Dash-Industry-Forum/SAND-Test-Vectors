@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-02-21T11:20:52-08:00">
+  <PlayList messageId="1234">
+    <Playback start="2016-04-22T16:20:52-08:00" mstart="PT3452S" starttype="New playout request">
+      <RenderingPeriod representationid="rep1" subreplevel="sub1" start="2016-04-22T16:21:23-08:00"></RenderingPeriod>
+    </Playback>
+  </PlayList>
+</SANDMessage>
