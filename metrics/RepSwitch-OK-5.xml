@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-02-21T11:20:52-08:00">
+  <RepSwitchList messageId="1234">
+    <RepSwitch t="PT3000S" mt="1331234" to="rep1" lto="1"></RepSwitch>
+    <RepSwitch t="PT4000S" mt="1431234" to="rep2"></RepSwitch>
+    <RepSwitch t="PT5000S" mt="1531234" to="rep3"></RepSwitch>
+    <RepSwitch t="PT6000S" mt="1631234" to="rep2"></RepSwitch>
+    <RepSwitch t="PT7000S" mt="1731234" to="rep1" lto="2"></RepSwitch>
+  </RepSwitchList>
+</SANDMessage>
