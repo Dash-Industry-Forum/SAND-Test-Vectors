@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-02-21T11:20:52-08:00">
+  <TcpList messageId="1" tcpid="143" dest="542" topen="2016-04-21T14:54:52-08:00" tclose="2016-04-21T14:55:12-08:00" tconnect="56788"></TcpList>
+  <TcpList messageId="2" tcpid="143" dest="542" topen="2016-04-21T15:04:52-08:00" tclose="2016-04-21T15:05:12-08:00" tconnect="585"></TcpList>
+  <TcpList messageId="3" tcpid="143" dest="542" topen="2016-04-21T15:10:30-08:00" tclose="2016-04-21T15:10:50-08:00" tconnect="588"></TcpList>
+  <TcpList messageId="4" tcpid="143" dest="542" topen="2016-04-21T15:15:50-08:00" tclose="2016-04-21T15:15:59-08:00" tconnect="568"></TcpList>
+  <TcpList messageId="5" tcpid="143" dest="542" topen="2016-04-21T15:24:02-08:00" tclose="2016-04-21T15:24:12-08:00" tconnect="788"></TcpList>
+</SANDMessage>
