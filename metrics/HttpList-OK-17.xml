@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-02-21T11:20:52-08:00">
+  <HttpList messageId="1234">
+    <HttpTransaction tcpid="007" type="MPD" url="server.com/movie.mpd" actualurl="cdnxyz.com/abcdef/movie.mpd" range="100-233" trequest="2016-04-22T15:20:52-08:00" tresponse="2016-04-22T15:20:55-08:00" responsecode="200" interval="25">
+      <Trace s="2016-04-22T15:20:52-08:00" d="3000">
+        <b>1234</b>
+        <b>2344</b>
+        <b>4367</b>
+      </Trace>
+      <Trace s="2016-04-22T15:21:52-08:00" d="2550">
+        <b>5234</b>
+        <b>6644</b>
+        <b>7787</b>
+      </Trace>
+      <Trace s="2016-04-22T15:22:52-08:00" d="4110">
+        <b>8534</b>
+        <b>9446</b>
+        <b>10467</b>
+      </Trace>
+    </HttpTransaction>
+  </HttpList>
+</SANDMessage>
