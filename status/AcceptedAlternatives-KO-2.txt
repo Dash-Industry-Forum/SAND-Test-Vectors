@@ -1,0 +1,1 @@
+SAND-AcceptedAlternatives: [sourceURL="/video/q_4/seg_25.mp4v",range=0-85333;range=0-64000]

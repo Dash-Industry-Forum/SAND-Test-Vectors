@@ -1,0 +1,1 @@
+SAND-AnticipatedRequests: [sourceURL="http://my.cdn.example.com/video/some_segment.m4v",range=0-5000,targetTime=2015-10-11T17:53:03Z;targetTime=2015-10-11T17:53:03Z]

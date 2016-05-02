@@ -1,0 +1,1 @@
+SAND-AnticipatedRequests: [sourceURL="http://my.cdn.example.com/video/some_segment.m4v"]

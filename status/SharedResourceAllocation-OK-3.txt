@@ -1,0 +1,1 @@
+SAND-SharedResourceAllocation: [bandwidth=300000,minBufferTime=1500;bandwidth=600000,minBufferTime=1500;bandwith=1200000,minBufferTime=1500]

@@ -1,0 +1,1 @@
+SAND-ClientCapabilities: messageSetUri=urn:mpeg:dash:sand:messageset:all:2016

@@ -1,0 +1,1 @@
+SAND-NextAlternatives: [sourceURL="/video/q_4/seg_25.mp4v",bandwidth=3200000;sourceURL="/video/q_3/seg_25.mp4v",bandwidth=2100000]

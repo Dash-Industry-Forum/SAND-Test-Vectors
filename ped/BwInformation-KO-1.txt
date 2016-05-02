@@ -1,0 +1,2 @@
+SAND-BwInformation: averageBandwidth=12345
+
