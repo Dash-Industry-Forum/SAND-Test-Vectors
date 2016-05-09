@@ -5,7 +5,7 @@ AnticipatedRequests-KO-1       Empty list of segments
 AnticipatedRequests-KO-2       One segment but no target time
 AnticipatedRequests-KO-3       One target time but no sourceURL
 AnticipatedRequests-KO-4       First correct segment (with byte range) but no target time on second segment
-AnticipatedRequests-KO-4       First correct segment (with byte range) but then target time withour sourceURL
+AnticipatedRequests-KO-4       First correct segment (with byte range) but then target time without sourceURL
 SharedResourceAllocation-OK-1  Three operation points, no optional attributes
 SharedResourceAllocation-OK-2  Three operation points with quality attribute
 SharedResourceAllocation-OK-3  Three operation points with minBufferTime attribute

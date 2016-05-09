@@ -1,1 +1,1 @@
-SAND-ClientCapabilities: supportedMessages=[6,10,13],messageSetUri=urn:mpeg:dash:sand:messageset:all:2016
+SAND-ClientCapabilities: supportedMessage=[6,10,13],messageSetUri="urn:mpeg:dash:sand:messageset:all:2016"

@@ -1,1 +1,1 @@
-SAND-SharedResourceAllocation: [bandwidth=300000,quality=1;bandwidth=600000,quality=2;bandwith=1200000,quality=3]
+SAND-SharedResourceAllocation: [bandwidth=300000,quality=1;bandwidth=600000,quality=2;bandwidth=1200000,quality=3]
