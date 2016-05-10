@@ -1,0 +1,1 @@
+SAND-ClientCapabilities: supportedMessage=[6,10,13]

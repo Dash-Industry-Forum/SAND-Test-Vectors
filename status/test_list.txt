@@ -46,3 +46,5 @@ NextAlternatives-KO-4          Two alternatives with deliveryScope, but missing 
 ClientCapabilities-OK-1        Group capability
 ClientCapabilities-OK-2        Explicit list of supported messages
 ClientCapabilities-KO-1        Ambiguous: both group and explicit list
+ClientCapabilities-KO-2        supportedMessage includes reserved code 0
+ClientCapabilities-KO-3        supportedMessage omits code 12 (ClientCapabilities supported!)
