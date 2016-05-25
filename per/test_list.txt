@@ -1,0 +1,5 @@
+per/DeliveredAlternative-OK-1.txt  Normal message with both URLs as absolute path
+per/DeliveredAlternative-KO-1.txt  initialURL present, but missing contentLocation
+per/DeliveredAlternative-KO-2.txt  contentLocation present but missing initialURL
+per/DeliveredAlternative-KO-3.txt  wrong attribute name finalURL instead of contentLocation
+per/DeliveredAlternative-KO-4.txt  initialURL value provided without quotes

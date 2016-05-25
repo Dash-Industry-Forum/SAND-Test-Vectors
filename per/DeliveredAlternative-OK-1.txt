@@ -1,0 +1,1 @@
+SAND-DeliveredAlternative: initialURL="/video/q_2/seg_25.mp4v",contentLocation="/video/q_4/seg_25.mp4v"
