@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+  targetNamespace="urn:mpeg:dash:schema:sandmessage:2016"
+  attributeFormDefault="unqualified"
+  elementFormDefault="qualified"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns="urn:mpeg:dash:schema:sandmessage:2016">
+  <!-- future xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1" -->
+
+  <xs:annotation>
+    <xs:appinfo>SAND Messages</xs:appinfo>
+    <xs:documentation xml:lang="en">
+      This Schema defines the Server And Network Assisted DASH (SAND) messages for MPEG-DASH.
+    </xs:documentation>
+  </xs:annotation>
+
+  <!-- SAND message: main element -->
+  <xs:element name="SANDMessage" type="SANDEnvelopeType"/>
+
+  <!-- SAND common envelope Type -->
+  <xs:complexType name="SANDEnvelopeType">
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="AnticipatedRequests" type="AnticipatedRequestsType"/>
+      <xs:element name="SharedResourceAllocation" type="SharedResourceAllocationType"/>
+      <xs:element name="AcceptedAlternatives" type="AcceptedAlternativesType"/>
+      <!-- AbsoluteDeadline is not allowed in XML, only in HTTP headers -->
+      <xs:element name="MaxRTT" type="MaxRTTType"/>
+      <xs:element name="NextAlternatives" type="NextAlternativesType"/>
+      <xs:element name="ResourceStatus" type="ResourceStatusType"/>
+      <xs:element name="DaneResourceStatus" type="DaneResourceStatusType"/>
+      <xs:element name="SharedResourceAssignment" type="SharedResourceAssignmentType"/>
+      <xs:element name="MPDValidityEndTime" type="MPDValidityEndTimeType"/>
+      <xs:element name="Throughput" type="ThroughputType"/>
+      <xs:element name="AvailabilityTimeOffset" type="AvailabilityTimeOffsetType"/>
+      <xs:element name="QoSInformation" type="QoSInformationType"/>
+      <!-- DeliveredAlternative is not allowed in XML, only in HTTP headers -->
+      <xs:element name="DaneCapabilities" type="DaneCapabilitiesType"/>
+      <xs:element name="BwInformation" type="BwInformationType"/>
+      <!-- ISO/ISC 23009-5 Annex D DASH metrics -->
+      <xs:element name="TcpList" type="TcpListType"/>
+      <xs:element name="HttpList" type="HttpListType"/>
+      <xs:element name="RepSwitchList" type="RepSwitchListType"/>
+      <xs:element name="BufferLevelList" type="BufferLevelListType"/>
+      <xs:element name="PlayList" type="PlayListType"/>
+      <xs:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:choice>
+    <xs:attribute name="senderId" type="xs:token"/>
+    <xs:attribute name="generationTime" type="xs:dateTime"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:complexType>
+
+  <!-- SAND message base Type -->
+  <xs:complexType name="SANDMessageType">
+    <xs:attribute name="messageId" type="xs:unsignedInt" use="required"/>
+    <xs:attribute name="validityTime" type="xs:dateTime"/>
+  </xs:complexType>
+
+  <!-- AnticipatedRequests Type -->
+  <xs:complexType name="AnticipatedRequestsType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="Request" type="AnticipatedRequestType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Request Type -->
+  <xs:complexType name="AnticipatedRequestType">
+    <xs:attribute name="sourceURL" type="xs:anyURI" use="required"/>
+    <xs:attribute name="range" type="xs:string"/>
+    <xs:attribute name="targetTime" type="xs:unsignedLong" use="required"/>
+  </xs:complexType>
+
+  <!-- SharedResourceAllocation Type -->
+  <xs:complexType name="SharedResourceAllocationType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="OperationPoint" type="OperationPointType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="weight" type="xs:unsignedInt"/>
+      <xs:attribute name="allocationStrategy" type="xs:anyURI"/>
+      <xs:attribute name="mpdURL" type="xs:anyURI"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- OperationPoint Type -->
+  <xs:complexType name="OperationPointType">
+    <xs:attribute name="bandwidth" type="xs:unsignedInt" use="required"/>
+    <xs:attribute name="quality" type="xs:unsignedInt"/>
+    <xs:attribute name="minBufferTime" type="xs:unsignedInt"/>
+  </xs:complexType>
+
+  <!-- AcceptedAlternatives Type -->
+  <xs:complexType name="AcceptedAlternativesType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="Alternative" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="sourceURL" type="xs:anyURI" use="required"/>
+            <xs:attribute name="range" type="xs:string"/>
+            <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
+            <xs:attribute name="deliveryScope" type="xs:unsignedInt"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- MaxRTT Type -->
+  <xs:complexType name="MaxRTTType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="maxRTT" type="xs:unsignedInt" use="required"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- NextAlternatives Type -->
+  <xs:complexType name="NextAlternativesType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="Alternative" minOccurs="1" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="sourceURL" type="xs:anyURI" use="required"/>
+            <xs:attribute name="range" type="xs:string"/>
+            <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
+            <xs:attribute name="deliveryScope" type="xs:unsignedInt"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- ClientCapabilities Type -->
+  <xs:complexType name="ClientCapabilitiesType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="SupportedMessage" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="messageType" type="xs:unsignedInt" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="messageSetUri" type="xs:anyURI"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- ResourceStatus Type -->
+  <xs:complexType name="ResourceStatusType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="baseURL" type="xs:anyURI"/>
+      <xs:attribute name="repID" type="StringNoWhitespaceType"/>
+      <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
+      <xs:attribute name="reason" type="xs:string"/>
+      <!--xs:assert test="(@baseURL and not(@repID)) or (not(@baseURL) and @repID)"/-->
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- ResourceStatus status enumeration -->
+  <xs:simpleType name="ResourceStatusTypeStatusType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="available"/>
+      <xs:enumeration value="cached"/>
+      <xs:enumeration value="unavailable"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- DaneResourceStatus Type -->
+  <xs:complexType name="DaneResourceStatusType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="resource" type="ResourceType" minOccurs="0" maxOccurs="unbounded"/>
+        <xs:element name="resourceGroup" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="status" type="DaneResourceStatusTypeStatusType" use="required"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+<!-- Resource Type -->
+  <xs:complexType name="ResourceType">
+    <xs:simpleContent>
+      <xs:extension base="xs:anyURI">
+        <xs:attribute name="bytes" type="xs:string"/>
+        <xs:anyAttribute namespace="##other" processContents="lax"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+<!-- DaneResourceStatus status enumeration -->
+  <xs:simpleType name="DaneResourceStatusTypeStatusType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="cached"/>
+      <xs:enumeration value="unavailable"/>
+      <xs:enumeration value="unknown"/>
+      <xs:enumeration value="promised"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- SharedResourceAssignment Type -->
+  <xs:complexType name="SharedResourceAssignmentType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="clientID" type="xs:token" use="required"/>
+      <xs:attribute name="resourcePrice" type="xs:unsignedInt"/>
+      <xs:attribute name="bandwidth" type="xs:unsignedInt" use="required"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- MPDValidityEndTime Type -->
+  <xs:complexType name="MPDValidityEndTimeType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="mpd" type="xs:string" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+      <xs:attribute name="mpdID" type="xs:string"/>
+      <xs:attribute name="publishTime" type="xs:dateTime"/>
+      <xs:attribute name="validityEndTime" type="xs:dateTime" use="required"/>
+      <xs:attribute name="mpdURL" type="xs:anyURI" use="required"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Throughput Type -->
+  <xs:complexType name="ThroughputType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="baseURL" type="xs:anyURI"/>
+      <xs:attribute name="repID" type="StringNoWhitespaceType"/>
+      <xs:attribute name="guaranteedThroughput" type="xs:unsignedInt" use="required"/>
+      <xs:attribute name="percentage" type="PercentageType"/>
+      <!--xs:assert test="(@baseURL and not(@repID)) or (not(@baseURL) and @repID)"/-->
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Percentage type -->
+  <xs:simpleType name="PercentageType">
+    <xs:restriction base="xs:unsignedInt">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="100"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- AvailabilityTimeOffset Type -->
+  <xs:complexType name="AvailabilityTimeOffsetType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="baseURL" type="xs:anyURI"/>
+      <xs:attribute name="repID" type="StringNoWhitespaceType"/>
+      <xs:attribute name="offset" type="xs:unsignedInt" use="required"/>
+      <!--xs:assert test="(@baseURL and not(@repID)) or (not(@baseURL) and @repID)"/-->
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- QoSInformation Type -->
+  <xs:complexType name="QoSInformationType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="gbr" type="xs:unsignedInt"/>
+      <xs:attribute name="mbr" type="xs:unsignedInt"/>
+      <xs:attribute name="delay" type="xs:unsignedInt"/>
+      <xs:attribute name="pl" type="xs:unsignedInt"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- DaneCapabilities Type -->
+  <xs:complexType name="DaneCapabilitiesType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="SupportedMessage" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="messageType" type="xs:unsignedInt" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="messageSetUri" type="xs:anyURI"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- BwInformation Type -->
+  <xs:complexType name="BwInformationType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="minBandwidth" type="xs:unsignedInt"/>
+      <xs:attribute name="maxBandwidth" type="xs:unsignedInt"/>
+      <!--xs:assert test="@minBandwidth or @maxBandwidth"/-->
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- String without white spaces, same as MPD schema -->
+  <xs:simpleType name="StringNoWhitespaceType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^\r\n\t \p{Z}]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Metrics as defined in Annex D of ISO/IEC 23009-1 -->
+  <!-- NOTE the naming convention complies with the keys defined in Annex D
+       and with camelCase convention like the rest of the schema -->
+
+  <!-- TcpList Type -->
+  <xs:complexType name="TcpListType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:attribute name="tcpid" type="xs:unsignedInt" use="required"/>
+      <xs:attribute name="dest" type="xs:unsignedInt"/>
+      <xs:attribute name="topen" type="xs:dateTime"/>
+      <xs:attribute name="tclose" type="xs:dateTime"/>
+      <xs:attribute name="tconnect" type="xs:unsignedInt"/>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- HttpList Type -->
+  <xs:complexType name="HttpListType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="HttpTransaction" type="HttpTransactionType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- HttpTransaction Type -->
+  <xs:complexType name="HttpTransactionType">
+    <xs:sequence>
+      <xs:element name="Trace" type="TraceType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="tcpid" type="xs:anyURI" use="required"/>
+    <xs:attribute name="type" type="HttpRequestTypeType"/>
+    <xs:attribute name="url" type="xs:anyURI"/>
+    <xs:attribute name="actualurl" type="xs:anyURI"/>
+    <xs:attribute name="range" type="xs:string"/>
+    <xs:attribute name="trequest" type="xs:dateTime"/>
+    <xs:attribute name="tresponse" type="xs:dateTime"/>
+    <xs:attribute name="responsecode" type="xs:unsignedInt"/>
+    <xs:attribute name="interval" type="xs:unsignedInt"/>
+  </xs:complexType>
+
+  <!-- HttpRequestType Type -->
+  <xs:simpleType name="HttpRequestTypeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="MPD"/>
+      <xs:enumeration value="XLink expansion"/>
+      <xs:enumeration value="Initialization Segment"/>
+      <xs:enumeration value="Index Segment"/>
+      <xs:enumeration value="Media Segment"/>
+      <xs:enumeration value="Bitstream Switching Segment"/>
+      <xs:enumeration value="Other"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Trace Type -->
+  <xs:complexType name="TraceType">
+    <xs:sequence>
+      <xs:element name="b" type="xs:unsignedInt" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="s" type="xs:dateTime"/>
+    <xs:attribute name="d" type="xs:unsignedInt"/>
+  </xs:complexType>
+
+  <!-- RepSwitchList Type -->
+  <xs:complexType name="RepSwitchListType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="RepSwitch" type="RepSwitchType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- RepSwitch Type -->
+  <xs:complexType name="RepSwitchType">
+    <xs:attribute name="t" type="xs:duration"/>
+    <xs:attribute name="mt" type="xs:unsignedInt"/>
+    <xs:attribute name="to" type="StringNoWhitespaceType"/>
+    <xs:attribute name="lto" type="xs:unsignedInt"/>
+  </xs:complexType>
+
+  <!-- BufferLevelList Type -->
+  <xs:complexType name="BufferLevelListType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="BufferLevel" type="BufferLevelType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- BufferLevel Type -->
+  <xs:complexType name="BufferLevelType">
+    <xs:attribute name="t" type="xs:dateTime"/>
+    <xs:attribute name="level" type="xs:unsignedInt"/>
+  </xs:complexType>
+
+  <!-- PlayList Type -->
+  <xs:complexType name="PlayListType">
+    <xs:complexContent>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="Playback" type="PlaybackType" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- Playback Type -->
+  <xs:complexType name="PlaybackType">
+    <xs:sequence>
+      <xs:element name="RenderingPeriod" type="RenderingPeriodType" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="start" type="xs:dateTime"/>
+    <xs:attribute name="mstart" type="xs:duration"/>
+    <xs:attribute name="starttype" type="StartType"/>
+  </xs:complexType>
+
+  <!-- Start Type -->
+  <xs:simpleType name="StartType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="New playout request"/>
+      <xs:enumeration value="Resume from pause"/>
+      <xs:enumeration value="Other user request"/>
+      <xs:enumeration value="Start of a metrics collection period"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- RenderingPeriod Type -->
+  <xs:complexType name="RenderingPeriodType">
+    <xs:attribute name="representationid" type="StringNoWhitespaceType" use="required"/>
+    <xs:attribute name="subreplevel" type="xs:unsignedInt"/>
+    <xs:attribute name="start" type="xs:dateTime"/>
+    <xs:attribute name="mstart" type="xs:duration"/>
+    <xs:attribute name="duration" type="xs:duration"/>
+    <xs:attribute name="playbackspeed" type="xs:decimal"/>
+    <xs:attribute name="stopreason" type="StopReasonType"/>
+  </xs:complexType>
+
+  <!-- StopReason Type -->
+  <xs:simpleType name="StopReasonType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Representation switch"/>
+      <xs:enumeration value="Rebuffering"/>
+      <xs:enumeration value="User request"/>
+      <xs:enumeration value="End of Period"/>
+      <xs:enumeration value="End of content"/>
+      <xs:enumeration value="End of a metrics collection period"/>
+      <xs:enumeration value="Failure"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

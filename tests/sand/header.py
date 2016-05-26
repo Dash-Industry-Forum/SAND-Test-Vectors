@@ -481,6 +481,17 @@ class ClientCapabilitiesChecker(HeaderSyntaxChecker):
                 if '12' not in codes:
                     self.add_error("supportedMessage must include code 12 (ClientCapabilities)")
 
+class DeliveredAlternativeChecker(HeaderSyntaxChecker):
+    """Class to check a SAND-DeliveredAlternative header message."""
+    
+    def __init__(self):
+        """Build the syntax description for this message"""
+        HeaderSyntaxChecker.__init__(
+            self,
+            { MANDATORY: ('initialURL', 'contentLocation'),
+              'initialURL': 'QUOTEDURI',
+              'contentLocation': 'QUOTEDURI' })
+
 class BwInformationChecker(HeaderSyntaxChecker):
     """Class to check a SAND-BwInformation header message."""
     
@@ -517,26 +528,28 @@ header_name_to_checker = {
   'sand-maxrtt': MaxRTTChecker(),
   'sand-nextalternatives': NextAlternativesChecker(),
   'sand-clientcapabilities': ClientCapabilitiesChecker(),
+  'sand-deliveredalternative': DeliveredAlternativeChecker(),
   'sand-bwinformation': BwInformationChecker(),
 }
 
 if __name__ == '__main__':
-    # Call this script from SAND_server directory,
-    # assuming test_vectors are in a sibling directory
+    # Call this script from the test-vectors directory,
     # This will test the parsing against test vectors.
     from glob import glob
     import os
-    for status in ('OK', 'KO'):
+    for expected_result in ('OK', 'KO'):
         print
-        if status == 'OK':
+        if expected_result == 'OK':
             print '=== TESTS THAT SHOULD PASS ==='
         else:
             print '=== TESTS THAT SHOULD FAIL ==='
         print
         
-        prefix = os.path.join('..', 'test-vectors')
-        match = '*-%s-*.txt' % status
-        for file_name in glob(os.path.join(prefix, 'status', match)) + glob(os.path.join(prefix, 'ped', match)):
+        match = '*-%s-*.txt' % expected_result
+        status_tests = glob(os.path.join('status', match))
+        per_tests = glob(os.path.join('per', 'DeliveredAlternative-%s-*.txt' % expected_result))
+        ped_tests = glob(os.path.join('ped', match))
+        for file_name in status_tests + per_tests + ped_tests:
             with open(file_name) as f:
                 name, input = f.readline().split(':', 1)
                 c = header_name_to_checker[name.lower()]
