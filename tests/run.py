@@ -8,6 +8,27 @@ sys.path.append("..")
 import sand.header
 from sand.xml_message import XMLValidator
 
+# TODO
+"""
+class TestMpd(unittest.TestCase):
+    def setUp(self):
+        with open("../schemas/sand_mpd.xsd") as f:
+            sand_mpd_schema_doc = etree.parse(f)
+            self.sand_mpd_schema = etree.XMLSchema(sand_mpd_schema_doc)
+
+    def test_valid_mpds(self):
+        for mpd_path in glob.glob("../mpd/*-OK-*.xml"):
+            mpd = etree.parse(mpd_path)
+            self.assertTrue(self.sand_mpd_schema.validate(mpd))
+            print "Test succesful : " + mpd_path
+
+    def test_invalid_mpds(self):
+        for mpd_path in glob.glob("../mpd/*-KO-*.xml"):
+            mpd = etree.parse(mpd_path)
+            self.assertFalse(self.sand_mpd_schema.validate(mpd))
+            print "Test succesful : " + mpd_path
+"""
+
 class TestXmlPerMessages(unittest.TestCase):
     def setUp(self):
         self.validator = XMLValidator()
