@@ -44,14 +44,27 @@ class XMLValidator:
 
     def __init__(self):
         xsd_path = join(dirname(__file__), self.sand_message_xsd)
-        with open(xsd_path) as f: 
+        with open(xsd_path) as f:
             sand_schema_doc = etree.parse(f)
             self.sand_xml_schema = etree.XMLSchema(sand_schema_doc)
 
-    def from_file(self, message_file):
-        message = etree.parse(message_file)
-        return self.sand_xml_schema.validate(message)
+    def from_file(self, file_path):
+        is_valid = False
+        try:
+            message_doc = etree.parse(file_path)
+            is_valid = self.sand_xml_schema.validate(message_doc)
+        except etree.XMLSyntaxError as e:
+            print e
+
+        return is_valid
 
     def from_string(self, message_string):
-        message = etree.fromstring(message_string)
-        return sand_schema.assertValid(message)
+        is_valid = False
+        try:
+            parser = etree.XMLParser(schema = self.sand_xml_schema)
+            etree.fromstring(message_string, parser)
+            is_valid = True
+        except etree.XMLSyntaxError as e:
+            print e
+
+        return is_valid
