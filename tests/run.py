@@ -2,32 +2,37 @@ import unittest
 import glob
 import re
 from lxml import etree
+from lxml import isoschematron
 
 import sys
 sys.path.append("..")
 import sand.header
 from sand.xml_message import XMLValidator
 
-# TODO
-"""
 class TestMpd(unittest.TestCase):
     def setUp(self):
-        with open("../schemas/sand_mpd.xsd") as f:
+        with open("../schemas/SAND-MPD.xsd") as f:
             sand_mpd_schema_doc = etree.parse(f)
             self.sand_mpd_schema = etree.XMLSchema(sand_mpd_schema_doc)
+        with open("../schemas/SAND-MPD.sch") as f:
+            sand_mpd_schmeatron_doc = etree.parse(f)
+            self.sand_mpd_schematron = isoschematron.Schematron(sand_mpd_schmeatron_doc)
 
     def test_valid_mpds(self):
         for mpd_path in glob.glob("../mpd/*-OK-*.xml"):
             mpd = etree.parse(mpd_path)
-            self.assertTrue(self.sand_mpd_schema.validate(mpd))
+            self.assertTrue(
+                self.sand_mpd_schema.validate(mpd)
+            and self.sand_mpd_schematron.validate(mpd))
             print "Test succesful : " + mpd_path
 
     def test_invalid_mpds(self):
         for mpd_path in glob.glob("../mpd/*-KO-*.xml"):
             mpd = etree.parse(mpd_path)
-            self.assertFalse(self.sand_mpd_schema.validate(mpd))
+            self.assertFalse(
+                self.sand_mpd_schema.validate(mpd)
+            and self.sand_mpd_schematron.validate(mpd))
             print "Test succesful : " + mpd_path
-"""
 
 class TestXmlPerMessages(unittest.TestCase):
     def setUp(self):
