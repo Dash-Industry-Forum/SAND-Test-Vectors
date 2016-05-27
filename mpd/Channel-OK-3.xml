@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:sand="urn:mpeg:dash:schema:sand:2016" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" type="dynamic" minimumUpdatePeriod="PT2S" timeShiftBufferDepth="PT30M" availabilityStartTime="2011-12-25T12:30:00" minBufferTime="PT4S" profiles="urn:mpeg:dash:profile:isoff-live:2011">
+<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:sand="urn:mpeg:dash:schema:sand:2016" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd urn:mpeg:dash:schema:sand:2016 SAND-MPD.xsd" type="dynamic" minimumUpdatePeriod="PT2S" timeShiftBufferDepth="PT30M" availabilityStartTime="2011-12-25T12:30:00" minBufferTime="PT4S" profiles="urn:mpeg:dash:profile:isoff-live:2011">
   <BaseURL>http://cdn1.example.com/</BaseURL>
   <BaseURL>http://cdn2.example.com/</BaseURL>
-  <sand:Channel schemeIdUri="urn:mpeg:dash:sand:channel:websocket:2016" endpoint="wss://cdn3.example.com?client_id=abcdef"/>
   <Period id="1">
     <!-- Video -->
     <AdaptationSet mimeType="video/mp4" codecs="avc1.4D401F" frameRate="30000/1001" segmentAlignment="true" startWithSAP="1">
@@ -26,4 +25,5 @@
       <Representation id="a0" bandwidth="64000"/>
     </AdaptationSet>
   </Period>
+  <sand:Channel schemeIdUri="urn:mpeg:dash:sand:channel:websocket:2016" endpoint="wss://cdn3.example.com?client_id=abcdef"/>
 </MPD>

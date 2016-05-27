@@ -1,21 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="urn:mpeg:dash:schema:sand:2016" targetNamespace="urn:mpeg:dash:schema:sand:2016" attributeFormDefault="unqualified" elementFormDefault="qualified">
-  <xs:import namespace="urn:mpeg:dash:schema:mpd:2011" schemaLocation="DASH-MPD.xsd"/>
   <xs:annotation>
     <xs:appinfo>SAND elements</xs:appinfo>
     <xs:documentation xml:lang="en">
-	    This Schema defines the Server And Network Assisted DASH (SAND) XML elements for MPEG-DASH.
+      This Schema defines the Server And Network Assisted DASH (SAND) XML elements for MPEG-DASH.
     </xs:documentation>
   </xs:annotation>
   
   <!-- SAND message: main element -->
-  <xs:element name="Channel" type="ChannelType"/>
+  <xs:element name="Channel">
+    <xs:alternative type="WebSocketChannelType" test="@schemeIdUri = 'urn:mpeg:dash:sand:channel:websocket:2016'" />
+  </xs:element>
   
   <!-- SAND Channel -->
-  <xs:complexType name="ChannelType">
+  <xs:complexType name="WebSocketChannelType">
     <xs:attribute name="id" type="xs:string"/>
     <xs:attribute name="schemeIdUri" type="xs:anyURI" use="required"/>
-    <xs:attribute name="endpoint" type="xs:anyURI" use="required"/>
+    <xs:attribute name="endpoint" type="xs:anyURI" use="required">
+      <xs:restriction base="xs:anyURI">
+        <xs:pattern value="ws(s)?://.+" />
+      </xs:restriction>
+    </xs:attribute>
     <xs:anyAttribute namespace="##other" processContents="lax"/>
   </xs:complexType>
 </xs:schema>
