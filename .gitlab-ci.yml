@@ -6,4 +6,4 @@ test:
   - python run.py -v
   artifacts:
     paths:
-    - ./test/report.log
+    - tests/report.log
