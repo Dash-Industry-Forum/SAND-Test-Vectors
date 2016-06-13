@@ -335,7 +335,7 @@
     <xs:sequence>
       <xs:element name="Trace" type="TraceType" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attribute name="tcpid" type="xs:anyURI" use="required"/>
+    <xs:attribute name="tcpid" type="xs:unsignedInt" use="required"/>
     <xs:attribute name="type" type="HttpRequestTypeType"/>
     <xs:attribute name="url" type="xs:anyURI"/>
     <xs:attribute name="actualurl" type="xs:anyURI"/>
