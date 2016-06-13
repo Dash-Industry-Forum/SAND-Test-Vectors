@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
   targetNamespace="urn:mpeg:dash:schema:sandmessage:2016"
   attributeFormDefault="unqualified"
@@ -194,7 +193,6 @@
     <xs:simpleContent>
       <xs:extension base="xs:anyURI">
         <xs:attribute name="bytes" type="xs:string"/>
-        <xs:anyAttribute namespace="##other" processContents="lax"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
