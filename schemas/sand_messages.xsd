@@ -211,7 +211,7 @@
     <xs:complexContent>
       <xs:extension base="SANDMessageType">
         <xs:sequence>
-          <xs:element name="resourcePrice" type="xs:decimal" minOccurs="0" maxOccurs="unbounded"/>
+          <xs:element name="ResourcePrice" type="xs:decimal" minOccurs="0" maxOccurs="unbounded"/>
 	</xs:sequence>
       <xs:attribute name="clientId" type="xs:token" use="required"/>
       <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
@@ -225,8 +225,8 @@
     <xs:extension base="SANDMessageType">
       <xs:sequence>
         <xs:choice>
-          <xs:element name="mpdUrl" type="xs:anyURI"/>
-          <xs:element name="mpd" type="xs:base64Binary"/>
+          <xs:element name="MPDUrl" type="xs:anyURI"/>
+          <xs:element name="MPD" type="xs:base64Binary"/>
         </xs:choice>
       </xs:sequence>
       <xs:attribute name="mpdId" type="xs:string"/>
@@ -280,7 +280,7 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-
+  
   <!-- DaneCapabilities Type -->
   <xs:complexType name="DaneCapabilitiesType">
     <xs:complexContent>
