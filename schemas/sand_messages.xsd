@@ -209,9 +209,11 @@
   <!-- SharedResourceAssignment Type -->
   <xs:complexType name="SharedResourceAssignmentType">
     <xs:complexContent>
-    <xs:extension base="SANDMessageType">
+      <xs:extension base="SANDMessageType">
+        <xs:sequence>
+          <xs:element name="resourcePrice" type="xs:decimal" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
       <xs:attribute name="clientId" type="xs:token" use="required"/>
-      <xs:attribute name="resourcePrice" type="xs:decimal" minOccurs="0" maxOccurs="unbounded"/>
       <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
     </xs:extension>
     </xs:complexContent>
