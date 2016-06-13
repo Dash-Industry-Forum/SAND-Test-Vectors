@@ -224,12 +224,14 @@
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
       <xs:sequence>
-        <xs:element name="mpd" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:choice>
+          <xs:element name="mpdUrl" type="xs:anyURI"/>
+          <xs:element name="mpd" type="xs:string"/>
+        </xs:choice>
       </xs:sequence>
       <xs:attribute name="mpdId" type="xs:string"/>
       <xs:attribute name="publishTime" type="xs:dateTime"/>
       <xs:attribute name="validityEndTime" type="xs:dateTime" use="required"/>
-      <xs:attribute name="mpdUrl" type="xs:anyURI" use="required"/>
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>

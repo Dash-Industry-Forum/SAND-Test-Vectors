@@ -10,7 +10,7 @@ import sand.header
 from sand.xml_message import XMLValidator
 import logging
 
-logging.basicConfig(filename='report.log',level=logging.DEBUG)
+logging.basicConfig(filename='report.log', level=logging.DEBUG, filemode='w')
 
 class TestMpd(unittest.TestCase):
     def setUp(self):
