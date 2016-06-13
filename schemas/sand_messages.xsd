@@ -284,16 +284,14 @@
   <!-- DaneCapabilities Type -->
   <xs:complexType name="DaneCapabilitiesType">
     <xs:complexContent>
-    <xs:extension base="SANDMessageType">
-      <xs:sequence>
-        <xs:element name="SupportedMessage" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:attribute name="messageType" type="xs:unsignedInt" use="required"/>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-      <xs:attribute name="messageSetUri" type="xs:anyURI"/>
-    </xs:extension>
+      <xs:extension base="SANDMessageType">
+	<xs:choice>
+          <xs:sequence>
+            <xs:element name="SupportedMessage" type="xs:unsignedInt" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:element name="MessageSetUri" type="xs:anyURI"/>
+        </xs:choice>
+      </xs:extension>
     </xs:complexContent>
   </xs:complexType>
 
