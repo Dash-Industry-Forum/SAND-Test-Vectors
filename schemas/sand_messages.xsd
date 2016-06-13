@@ -226,7 +226,7 @@
       <xs:sequence>
         <xs:choice>
           <xs:element name="mpdUrl" type="xs:anyURI"/>
-          <xs:element name="mpd" type="xs:string"/>
+          <xs:element name="mpd" type="xs:base64Binary"/>
         </xs:choice>
       </xs:sequence>
       <xs:attribute name="mpdId" type="xs:string"/>
