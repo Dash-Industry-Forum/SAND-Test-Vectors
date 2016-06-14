@@ -1,1 +1,1 @@
-SAND-AnticipatedRequests: [sourceURL="http://my.cdn.example.com/video/some_segment.m4v",range=0-5000,targetTime=2015-10-11T17:53:03Z;sourceURL="http://my.cdn.example.com/video/other_segment.m4v"]
+SAND-AnticipatedRequests: [sourceURL="http://my.cdn.example.com/video/some_segment.m4v",range=0-5000,targetTime=20151011T175303Z;sourceURL="http://my.cdn.example.com/video/other_segment.m4v"]
