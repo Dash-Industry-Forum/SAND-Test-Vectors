@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-02-21T11:20:52-08:00">
-  <TcpList messageId="1234" tcpid="123" tconnect="45,5"></TcpList>
+  <TcpList messageId="1234">
+    <TcpConnection tcpid="123" tconnect="45,5"/>
+  </TcpList>
 </SANDMessage>

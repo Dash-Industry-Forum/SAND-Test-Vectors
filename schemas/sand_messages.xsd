@@ -309,14 +309,21 @@
   <!-- TcpList Type -->
   <xs:complexType name="TcpListType">
     <xs:complexContent>
-    <xs:extension base="SANDMessageType">
+      <xs:extension base="SANDMessageType">
+        <xs:sequence>
+          <xs:element name="TcpConnection" type="TcpConnectionType" minOccurs="1" maxOccurs="unbounded" />
+	</xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- TcpConnection Type -->
+  <xs:complexType name="TcpConnectionType">
       <xs:attribute name="tcpid" type="xs:unsignedInt" use="required"/>
       <xs:attribute name="dest" type="xs:unsignedInt"/>
       <xs:attribute name="topen" type="xs:dateTime"/>
       <xs:attribute name="tclose" type="xs:dateTime"/>
       <xs:attribute name="tconnect" type="xs:unsignedInt"/>
-    </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
 
   <!-- HttpList Type -->
