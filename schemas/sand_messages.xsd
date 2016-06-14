@@ -419,7 +419,7 @@
   <!-- Playback Type -->
   <xs:complexType name="PlaybackType">
     <xs:sequence>
-      <xs:element name="RenderingPeriod" type="RenderingPeriodType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="RenderingPeriod" type="RenderingPeriodType" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="start" type="xs:dateTime"/>
     <xs:attribute name="mstart" type="xs:duration"/>
