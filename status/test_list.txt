@@ -5,7 +5,7 @@ AnticipatedRequests-KO-1       Empty list of segments
 AnticipatedRequests-KO-2       One segment but no target time
 AnticipatedRequests-KO-3       One target time but no sourceURL
 AnticipatedRequests-KO-4       First correct segment (with byte range) but no target time on second segment
-AnticipatedRequests-KO-4       First correct segment (with byte range) but then target time without sourceURL
+AnticipatedRequests-KO-5       First correct segment (with byte range) but then target time without sourceURL
 SharedResourceAllocation-OK-1  Three operation points, no optional attributes
 SharedResourceAllocation-OK-2  Three operation points with quality attribute
 SharedResourceAllocation-OK-3  Three operation points with minBufferTime attribute
@@ -32,6 +32,7 @@ AcceptedAlternatives-KO-3      Two alternatives with bandwidth, but missing sour
 AcceptedAlternatives-KO-4      Two alternatives with deliveryScope, but missing sourceURL on the second
 AbsoluteDeadline-OK-1.txt      Example of a correct deadline
 AbsoluteDeadline-KO-1.txt      Wrong syntax in time specification
+AbsoluteDeadline-KO-2.txt      Extended ISO time specification not allowed
 MaxRTT-OK-1.txt                Example of a correct max RTT
 MaxRTT-KO-1.txt                Wrong syntax in max RTT
 NextAlternatives-OK-1          Two alternatives, no optional attribute
