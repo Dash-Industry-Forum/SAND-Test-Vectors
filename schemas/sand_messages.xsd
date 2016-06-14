@@ -363,10 +363,10 @@
   <!-- Trace Type -->
   <xs:complexType name="TraceType">
     <xs:sequence>
-      <xs:element name="b" type="xs:unsignedInt" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="b" type="xs:unsignedInt" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attribute name="s" type="xs:dateTime"/>
-    <xs:attribute name="d" type="xs:unsignedInt"/>
+    <xs:attribute name="s" type="xs:dateTime" use="required"/>
+    <xs:attribute name="d" type="xs:unsignedInt" use="required"/>
   </xs:complexType>
 
   <!-- RepSwitchList Type -->
