@@ -401,8 +401,8 @@
 
   <!-- BufferLevel Type -->
   <xs:complexType name="BufferLevelType">
-    <xs:attribute name="t" type="xs:dateTime"/>
-    <xs:attribute name="level" type="xs:unsignedInt"/>
+    <xs:attribute name="t" type="xs:dateTime" use="required"/>
+    <xs:attribute name="level" type="xs:unsignedInt" use="required"/>
   </xs:complexType>
 
   <!-- PlayList Type -->
