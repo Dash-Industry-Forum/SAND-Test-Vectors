@@ -382,7 +382,7 @@
 
   <!-- RepSwitch Type -->
   <xs:complexType name="RepSwitchType">
-    <xs:attribute name="t" type="xs:duration"/>
+    <xs:attribute name="t" type="xs:duration" use="required"/>
     <xs:attribute name="mt" type="xs:unsignedInt"/>
     <xs:attribute name="to" type="StringNoWhitespaceType"/>
     <xs:attribute name="lto" type="xs:unsignedInt"/>
