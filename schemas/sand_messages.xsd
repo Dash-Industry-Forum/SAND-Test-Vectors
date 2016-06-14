@@ -320,7 +320,7 @@
   <!-- TcpConnection Type -->
   <xs:complexType name="TcpConnectionType">
       <xs:attribute name="tcpid" type="xs:unsignedInt" use="required"/>
-      <xs:attribute name="dest" type="xs:unsignedInt"/>
+      <xs:attribute name="dest" type="xs:string"/>
       <xs:attribute name="topen" type="xs:dateTime"/>
       <xs:attribute name="tclose" type="xs:dateTime"/>
       <xs:attribute name="tconnect" type="xs:unsignedInt"/>
