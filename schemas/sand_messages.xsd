@@ -67,7 +67,7 @@
   <!-- Request Type -->
   <xs:complexType name="AnticipatedRequestType">
     <xs:attribute name="sourceUrl" type="xs:anyURI" use="required"/>
-    <xs:attribute name="range" type="xs:string"/>
+    <xs:attribute name="range" type="ByteRangeSetType"/>
     <xs:attribute name="targetTime" type="xs:unsignedLong"/>
   </xs:complexType>
 
@@ -100,7 +100,7 @@
         <xs:element name="Alternative" minOccurs="1" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="sourceUrl" type="xs:anyURI" use="required"/>
-            <xs:attribute name="range" type="xs:string"/>
+            <xs:attribute name="range" type="ByteRangeSetType"/>
             <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
             <xs:attribute name="deliveryScope" type="xs:unsignedInt"/>
           </xs:complexType>
@@ -127,7 +127,7 @@
         <xs:element name="Alternative" minOccurs="1" maxOccurs="unbounded">
           <xs:complexType>
             <xs:attribute name="sourceUrl" type="xs:anyURI" use="required"/>
-            <xs:attribute name="range" type="xs:string"/>
+            <xs:attribute name="range" type="ByteRangeSetType"/>
             <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
             <xs:attribute name="deliveryScope" type="xs:unsignedInt"/>
           </xs:complexType>
@@ -295,12 +295,6 @@
     </xs:complexContent>
   </xs:complexType>
 
-  <!-- String without white spaces, same as MPD schema -->
-  <xs:simpleType name="StringNoWhitespaceType">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="[^\r\n\t \p{Z}]*"/>
-    </xs:restriction>
-  </xs:simpleType>
 
   <!-- Metrics as defined in Annex D of ISO/IEC 23009-1 -->
   <!-- NOTE the naming convention complies with the keys defined in Annex D
@@ -346,7 +340,7 @@
     <xs:attribute name="type" type="HttpRequestTypeType"/>
     <xs:attribute name="url" type="xs:anyURI"/>
     <xs:attribute name="actualurl" type="xs:anyURI"/>
-    <xs:attribute name="range" type="xs:string"/>
+    <xs:attribute name="range" type="ByteRangeSetType"/>
     <xs:attribute name="trequest" type="xs:dateTime"/>
     <xs:attribute name="tresponse" type="xs:dateTime"/>
     <xs:attribute name="responsecode" type="xs:unsignedInt"/>
@@ -463,6 +457,20 @@
       <xs:enumeration value="End of content"/>
       <xs:enumeration value="End of a metrics collection period"/>
       <xs:enumeration value="Failure"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- String without white spaces, same as MPD schema -->
+  <xs:simpleType name="StringNoWhitespaceType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^\r\n\t \p{Z}]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- 14.35.1 Byte Ranges of RFC 2616 -->
+  <xs:simpleType name="ByteRangeSetType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="((\d+-\d*)|(\d*-\d+))(,((\d+-\d*)|(\d*-\d+)))*"/>
     </xs:restriction>
   </xs:simpleType>
 
