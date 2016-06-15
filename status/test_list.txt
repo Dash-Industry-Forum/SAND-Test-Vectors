@@ -46,6 +46,6 @@ NextAlternatives-KO-3          Two alternatives with bandwidth, but missing sour
 NextAlternatives-KO-4          Two alternatives with deliveryScope, but missing sourceURL on the second
 ClientCapabilities-OK-1        Group capability
 ClientCapabilities-OK-2        Explicit list of supported messages
-ClientCapabilities-KO-1        Ambiguous: both group and explicit list
+ClientCapabilities-KO-1        Missing both attributes
 ClientCapabilities-KO-2        supportedMessage includes reserved code 0
 ClientCapabilities-KO-3        supportedMessage omits code 12 (ClientCapabilities supported!)
