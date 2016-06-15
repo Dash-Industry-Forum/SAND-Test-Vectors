@@ -1,1 +1,1 @@
-SAND-AcceptedAlternatives: [sourceURL="/video/q_4/seg_25.mp4v",range=0-85333,bandwidth=3200000,deliveryScope=2;sourceURL="/video/q_3/seg_25.mp4v",range=0-64000,bandwidth=2100000,deliveryScope=3]
+SAND-AcceptedAlternatives: [sourceUrl="/video/q_4/seg_25.mp4v",range=0-85333,bandwidth=3200000,deliveryScope=2;sourceUrl="/video/q_3/seg_25.mp4v",range=0-64000,bandwidth=2100000,deliveryScope=3]

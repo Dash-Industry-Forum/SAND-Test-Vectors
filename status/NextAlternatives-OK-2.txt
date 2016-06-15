@@ -1,1 +1,1 @@
-SAND-NextAlternatives: [sourceURL="/video/q_4/seg_25.mp4v",range=0-85333;sourceURL="/video/q_3/seg_25.mp4v",range=0-64000]
+SAND-NextAlternatives: [sourceUrl="/video/q_4/seg_25.mp4v",range=0-85333;sourceUrl="/video/q_3/seg_25.mp4v",range=0-64000]
