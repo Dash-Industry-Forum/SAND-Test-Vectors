@@ -1,1 +1,0 @@
-SAND-SharedResourceAllocation: [bandwidth=300000;bandwidth=600000;bandwidth=1200000],allocationStrategy="urn:mpeg:dash:sand:allocation:everybody-served:2016"
