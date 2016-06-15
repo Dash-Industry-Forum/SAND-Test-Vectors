@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-02-21T11:20:52-08:00">
-  <MPDValidityEndTime messageId="45678" mpdURL="server.com/movie.mpd" validityEndTime="2016-02-21T11:23:00-08:00" mpdID="movie-123-gfg" publishTime="2016-02-21T09:25:12-08:00" ></MPDValidityEndTime>
+  <MPDValidityEndTime messageId="45678" validityEndTime="2016-02-21T11:23:00-08:00" mpdId="movie-123-gfg" publishTime="2016-02-21T09:25:12-08:00">
+    <MPDUrl>server.com/movie.mpd</MPDUrl>
+  </MPDValidityEndTime>
 </SANDMessage>

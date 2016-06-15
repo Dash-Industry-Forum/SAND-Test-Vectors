@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <xs:schema
   targetNamespace="urn:mpeg:dash:schema:sandmessage:2016"
   attributeFormDefault="unqualified"
@@ -35,7 +34,6 @@
       <xs:element name="QoSInformation" type="QoSInformationType"/>
       <!-- DeliveredAlternative is not allowed in XML, only in HTTP headers -->
       <xs:element name="DaneCapabilities" type="DaneCapabilitiesType"/>
-      <xs:element name="BwInformation" type="BwInformationType"/>
       <!-- ISO/ISC 23009-5 Annex D DASH metrics -->
       <xs:element name="TcpList" type="TcpListType"/>
       <xs:element name="HttpList" type="HttpListType"/>
@@ -68,9 +66,9 @@
 
   <!-- Request Type -->
   <xs:complexType name="AnticipatedRequestType">
-    <xs:attribute name="sourceURL" type="xs:anyURI" use="required"/>
-    <xs:attribute name="range" type="xs:string"/>
-    <xs:attribute name="targetTime" type="xs:unsignedLong" use="required"/>
+    <xs:attribute name="sourceUrl" type="xs:anyURI" use="required"/>
+    <xs:attribute name="range" type="ByteRangeSetType"/>
+    <xs:attribute name="targetTime" type="xs:unsignedLong"/>
   </xs:complexType>
 
   <!-- SharedResourceAllocation Type -->
@@ -82,7 +80,7 @@
       </xs:sequence>
       <xs:attribute name="weight" type="xs:unsignedInt"/>
       <xs:attribute name="allocationStrategy" type="xs:anyURI"/>
-      <xs:attribute name="mpdURL" type="xs:anyURI"/>
+      <xs:attribute name="mpdUrl" type="xs:anyURI"/>
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -101,8 +99,8 @@
       <xs:sequence>
         <xs:element name="Alternative" minOccurs="1" maxOccurs="unbounded">
           <xs:complexType>
-            <xs:attribute name="sourceURL" type="xs:anyURI" use="required"/>
-            <xs:attribute name="range" type="xs:string"/>
+            <xs:attribute name="sourceUrl" type="xs:anyURI" use="required"/>
+            <xs:attribute name="range" type="ByteRangeSetType"/>
             <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
             <xs:attribute name="deliveryScope" type="xs:unsignedInt"/>
           </xs:complexType>
@@ -128,8 +126,8 @@
       <xs:sequence>
         <xs:element name="Alternative" minOccurs="1" maxOccurs="unbounded">
           <xs:complexType>
-            <xs:attribute name="sourceURL" type="xs:anyURI" use="required"/>
-            <xs:attribute name="range" type="xs:string"/>
+            <xs:attribute name="sourceUrl" type="xs:anyURI" use="required"/>
+            <xs:attribute name="range" type="ByteRangeSetType"/>
             <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
             <xs:attribute name="deliveryScope" type="xs:unsignedInt"/>
           </xs:complexType>
@@ -159,11 +157,11 @@
   <xs:complexType name="ResourceStatusType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
-      <xs:attribute name="baseURL" type="xs:anyURI"/>
-      <xs:attribute name="repID" type="StringNoWhitespaceType"/>
+      <xs:attribute name="baseUrl" type="xs:anyURI"/>
+      <xs:attribute name="repId" type="StringNoWhitespaceType"/>
       <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
       <xs:attribute name="reason" type="xs:string"/>
-      <!--xs:assert test="(@baseURL and not(@repID)) or (not(@baseURL) and @repID)"/-->
+      <!--xs:assert test="(@baseUrl and not(@repId)) or (not(@baseUrl) and @repId)"/-->
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -195,7 +193,6 @@
     <xs:simpleContent>
       <xs:extension base="xs:anyURI">
         <xs:attribute name="bytes" type="xs:string"/>
-        <xs:anyAttribute namespace="##other" processContents="lax"/>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
@@ -205,7 +202,6 @@
     <xs:restriction base="xs:string">
       <xs:enumeration value="cached"/>
       <xs:enumeration value="unavailable"/>
-      <xs:enumeration value="unknown"/>
       <xs:enumeration value="promised"/>
     </xs:restriction>
   </xs:simpleType>
@@ -213,10 +209,12 @@
   <!-- SharedResourceAssignment Type -->
   <xs:complexType name="SharedResourceAssignmentType">
     <xs:complexContent>
-    <xs:extension base="SANDMessageType">
-      <xs:attribute name="clientID" type="xs:token" use="required"/>
-      <xs:attribute name="resourcePrice" type="xs:unsignedInt"/>
-      <xs:attribute name="bandwidth" type="xs:unsignedInt" use="required"/>
+      <xs:extension base="SANDMessageType">
+        <xs:sequence>
+          <xs:element name="ResourcePrice" type="xs:decimal" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+      <xs:attribute name="clientId" type="xs:token" use="required"/>
+      <xs:attribute name="bandwidth" type="xs:unsignedInt"/>
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -226,12 +224,14 @@
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
       <xs:sequence>
-        <xs:element name="mpd" type="xs:string" minOccurs="0" maxOccurs="1"/>
+        <xs:choice>
+          <xs:element name="MPDUrl" type="xs:anyURI"/>
+          <xs:element name="MPD" type="xs:base64Binary"/>
+        </xs:choice>
       </xs:sequence>
-      <xs:attribute name="mpdID" type="xs:string"/>
+      <xs:attribute name="mpdId" type="xs:string"/>
       <xs:attribute name="publishTime" type="xs:dateTime"/>
       <xs:attribute name="validityEndTime" type="xs:dateTime" use="required"/>
-      <xs:attribute name="mpdURL" type="xs:anyURI" use="required"/>
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -240,11 +240,11 @@
   <xs:complexType name="ThroughputType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
-      <xs:attribute name="baseURL" type="xs:anyURI"/>
-      <xs:attribute name="repID" type="StringNoWhitespaceType"/>
+      <xs:attribute name="baseUrl" type="xs:anyURI"/>
+      <xs:attribute name="repId" type="StringNoWhitespaceType"/>
       <xs:attribute name="guaranteedThroughput" type="xs:unsignedInt" use="required"/>
       <xs:attribute name="percentage" type="PercentageType"/>
-      <!--xs:assert test="(@baseURL and not(@repID)) or (not(@baseURL) and @repID)"/-->
+      <!--xs:assert test="(@baseUrl and not(@repId)) or (not(@baseUrl) and @repId)"/-->
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -261,10 +261,10 @@
   <xs:complexType name="AvailabilityTimeOffsetType">
     <xs:complexContent>
     <xs:extension base="SANDMessageType">
-      <xs:attribute name="baseURL" type="xs:anyURI"/>
-      <xs:attribute name="repID" type="StringNoWhitespaceType"/>
+      <xs:attribute name="baseUrl" type="xs:anyURI"/>
+      <xs:attribute name="repId" type="StringNoWhitespaceType"/>
       <xs:attribute name="offset" type="xs:unsignedInt" use="required"/>
-      <!--xs:assert test="(@baseURL and not(@repID)) or (not(@baseURL) and @repID)"/-->
+      <!--xs:assert test="(@baseUrl and not(@repId)) or (not(@baseUrl) and @repId)"/-->
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -280,40 +280,21 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-
+  
   <!-- DaneCapabilities Type -->
   <xs:complexType name="DaneCapabilitiesType">
     <xs:complexContent>
-    <xs:extension base="SANDMessageType">
-      <xs:sequence>
-        <xs:element name="SupportedMessage" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:attribute name="messageType" type="xs:unsignedInt" use="required"/>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-      <xs:attribute name="messageSetUri" type="xs:anyURI"/>
-    </xs:extension>
+      <xs:extension base="SANDMessageType">
+	<xs:choice>
+          <xs:sequence>
+            <xs:element name="SupportedMessage" type="xs:unsignedInt" minOccurs="1" maxOccurs="unbounded"/>
+          </xs:sequence>
+          <xs:element name="MessageSetUri" type="xs:anyURI"/>
+        </xs:choice>
+      </xs:extension>
     </xs:complexContent>
   </xs:complexType>
 
-  <!-- BwInformation Type -->
-  <xs:complexType name="BwInformationType">
-    <xs:complexContent>
-    <xs:extension base="SANDMessageType">
-      <xs:attribute name="minBandwidth" type="xs:unsignedInt"/>
-      <xs:attribute name="maxBandwidth" type="xs:unsignedInt"/>
-      <!--xs:assert test="@minBandwidth or @maxBandwidth"/-->
-    </xs:extension>
-    </xs:complexContent>
-  </xs:complexType>
-
-  <!-- String without white spaces, same as MPD schema -->
-  <xs:simpleType name="StringNoWhitespaceType">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="[^\r\n\t \p{Z}]*"/>
-    </xs:restriction>
-  </xs:simpleType>
 
   <!-- Metrics as defined in Annex D of ISO/IEC 23009-1 -->
   <!-- NOTE the naming convention complies with the keys defined in Annex D
@@ -322,14 +303,21 @@
   <!-- TcpList Type -->
   <xs:complexType name="TcpListType">
     <xs:complexContent>
-    <xs:extension base="SANDMessageType">
+      <xs:extension base="SANDMessageType">
+        <xs:sequence>
+          <xs:element name="TcpConnection" type="TcpConnectionType" minOccurs="1" maxOccurs="unbounded" />
+	</xs:sequence>
+    </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <!-- TcpConnection Type -->
+  <xs:complexType name="TcpConnectionType">
       <xs:attribute name="tcpid" type="xs:unsignedInt" use="required"/>
-      <xs:attribute name="dest" type="xs:unsignedInt"/>
+      <xs:attribute name="dest" type="xs:string"/>
       <xs:attribute name="topen" type="xs:dateTime"/>
       <xs:attribute name="tclose" type="xs:dateTime"/>
       <xs:attribute name="tconnect" type="xs:unsignedInt"/>
-    </xs:extension>
-    </xs:complexContent>
   </xs:complexType>
 
   <!-- HttpList Type -->
@@ -348,11 +336,11 @@
     <xs:sequence>
       <xs:element name="Trace" type="TraceType" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attribute name="tcpid" type="xs:anyURI" use="required"/>
+    <xs:attribute name="tcpid" type="xs:unsignedInt" use="required"/>
     <xs:attribute name="type" type="HttpRequestTypeType"/>
     <xs:attribute name="url" type="xs:anyURI"/>
     <xs:attribute name="actualurl" type="xs:anyURI"/>
-    <xs:attribute name="range" type="xs:string"/>
+    <xs:attribute name="range" type="ByteRangeSetType"/>
     <xs:attribute name="trequest" type="xs:dateTime"/>
     <xs:attribute name="tresponse" type="xs:dateTime"/>
     <xs:attribute name="responsecode" type="xs:unsignedInt"/>
@@ -375,10 +363,10 @@
   <!-- Trace Type -->
   <xs:complexType name="TraceType">
     <xs:sequence>
-      <xs:element name="b" type="xs:unsignedInt" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="b" type="xs:unsignedInt" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
-    <xs:attribute name="s" type="xs:dateTime"/>
-    <xs:attribute name="d" type="xs:unsignedInt"/>
+    <xs:attribute name="s" type="xs:dateTime" use="required"/>
+    <xs:attribute name="d" type="xs:unsignedInt" use="required"/>
   </xs:complexType>
 
   <!-- RepSwitchList Type -->
@@ -394,7 +382,7 @@
 
   <!-- RepSwitch Type -->
   <xs:complexType name="RepSwitchType">
-    <xs:attribute name="t" type="xs:duration"/>
+    <xs:attribute name="t" type="xs:dateTime" use="required"/>
     <xs:attribute name="mt" type="xs:unsignedInt"/>
     <xs:attribute name="to" type="StringNoWhitespaceType"/>
     <xs:attribute name="lto" type="xs:unsignedInt"/>
@@ -413,8 +401,8 @@
 
   <!-- BufferLevel Type -->
   <xs:complexType name="BufferLevelType">
-    <xs:attribute name="t" type="xs:dateTime"/>
-    <xs:attribute name="level" type="xs:unsignedInt"/>
+    <xs:attribute name="t" type="xs:dateTime" use="required"/>
+    <xs:attribute name="level" type="xs:unsignedInt" use="required"/>
   </xs:complexType>
 
   <!-- PlayList Type -->
@@ -431,7 +419,7 @@
   <!-- Playback Type -->
   <xs:complexType name="PlaybackType">
     <xs:sequence>
-      <xs:element name="RenderingPeriod" type="RenderingPeriodType" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="RenderingPeriod" type="RenderingPeriodType" minOccurs="1" maxOccurs="unbounded"/>
     </xs:sequence>
     <xs:attribute name="start" type="xs:dateTime"/>
     <xs:attribute name="mstart" type="xs:duration"/>
@@ -469,6 +457,20 @@
       <xs:enumeration value="End of content"/>
       <xs:enumeration value="End of a metrics collection period"/>
       <xs:enumeration value="Failure"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- String without white spaces, same as MPD schema -->
+  <xs:simpleType name="StringNoWhitespaceType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[^\r\n\t \p{Z}]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <!-- 14.35.1 Byte Ranges of RFC 2616 -->
+  <xs:simpleType name="ByteRangeSetType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="((\d+-\d*)|(\d*-\d+))(,((\d+-\d*)|(\d*-\d+)))*"/>
     </xs:restriction>
   </xs:simpleType>
 

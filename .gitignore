@@ -3,3 +3,5 @@
 *.swp
 
 *.pyc
+
+tests/report.log

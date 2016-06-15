@@ -52,22 +52,19 @@ uri_encoded = r'%[A-Fa-f0-9]{2}'
 regular_expressions = {
     'QUOTEDSTRING': re.compile(r'"(\\"|[^"])*"'),
     'QUOTEDURI': re.compile(r'("%s:(%s|%s)+")|("(%s|%s)+")' % (uri_proto, uri_allowed, uri_encoded, uri_allowed, uri_encoded)),
-    # TODO: we have no example of TOKEN in HTTP headers
-    # the exact expression should be refined.
-    'TOKEN': re.compile(r'[a-zA-Z0-9]+'),
     'INT': re.compile(r'\d+'),
     # TODO: do we accept empty start for 0 in a range?
     'BYTERANGE': re.compile(r'\d+-\d*'),
-    'DATETIME': re.compile(r'\d\d\d\d\-\d\d\-\d\dT\d\d:\d\d:\d\d(\.\d{,6})?Z'),
-    # Extension to DIS syntax, for ClientCapabilities
-    # TODO: obtain the final specification
+    'DATETIME': re.compile(r'\d\d\d\d\d\d\d\dT\d\d\d\d\d\d(\.\d{,6})?Z'),
     'LIST': re.compile(r'\[(\d+(,\d+)*)?\]'),
 }
 # A regexp that allows to 'eat' characters that may belong to a DATETIME.
 # This is used in case the DATETIME is wrongly written, e.g. one missing char
-# example: 2016-0601T12:00:00Z has a missing dash, but this regexp allows to
-# recognize all the string as 'wrong datetime', instead of stopping at 6th character
-# and failing again because other characters will not match another expected attribute.
+# or the extended format allowed by ISO (but restricted by SAND).
+# example: 2016-06-01T12:00:00Z is correct ISO date but not SAND allowed,
+# but this regexp allows to recognize all the string as 'wrong datetime',
+# instead of stopping at 5th character and failing again because other
+# characters will not match another expected attribute.
 datetime_allowed_chars = re.compile(r'[\d\-T:\.Z]+')
 
 class SandObject:
@@ -159,10 +156,10 @@ class HeaderSyntaxChecker:
             item_length = 0 # number of chars for one item (sublist or attribute)
             if input[0] == '[':
                 # Apparently the start of a sublist
-                # First is it allowed?
+                # First, is it allowed?
                 if result.list is not None:
                     self.add_error('Only one list is allowed%s.' % number_text)
-                    # we will parse it anyway, it may have the right syntax
+                    # we will parse it anyway, it may have the correct syntax
                 elif 'list' not in syntax:
                     self.add_error("Unexpected sand-list found %s. Stopping parsing." % number_text)
                     raise ParsingStopped
@@ -186,24 +183,33 @@ class HeaderSyntaxChecker:
                     self.add_error("Expecting '=' for sand-attribute%s." % number_text)
                 # Check attribute name is well formed
                 if not attr_name.isalpha():
-                    # TODO: make a special case for white space
-                    self.add_error("sand-attribute name should be alphabetic%s." % number_text)
+                    if attr_name.strip().isalpha():
+                        self.add_error("no space allowed around sand-attribute name%s." % number_text)
+                    else:
+                        self.add_error("sand-attribute name should be alphabetic%s." % number_text)
                 item_length += len(attr_name)
                 # Check we have something to parse for the value
-                if right is not None and not right:
+                if right is not None and not right.strip():
                     self.add_error("Empty value for sand-attribute after '='%s." % number_text)
                 # Check it is an expected attribute
+                attr_name = attr_name.strip() # Already checked white space
                 if attr_name not in syntax:
                     self.add_error("Unexpected sand-attribute name '%s'%s. Stopping parsing." % (attr_name, number_text))
                     raise ParsingStopped
                 # Parse the value
-                value = self.check_value(syntax[attr_name], input[item_length:])
-                item_length += value.char_count
+                if right is not None:
+                    if right.strip():
+                        value = self.check_value(syntax[attr_name], input[item_length:])
+                        item_length += value.char_count
+                    else:
+                        # empty value already signalled, do not parse
+                        value = SandValue()
+                        item_length += len(right)
                 # Attributes must be unique
                 if hasattr(result, attr_name):
                     self.add_error("sand-attribute %s should occur only once%s." % (attr_name, number_text))
                 setattr(result, attr_name, value.data)
-            # Now that on item has been parsed, prepare for the next
+            # Now that one item has been parsed, prepare for the next
             # move to remaining input:
             input = input[item_length:]
             result.char_count += item_length
@@ -218,9 +224,9 @@ class HeaderSyntaxChecker:
                 else:
                     # 2 cases:
                     # input[0] in (';', ']') is normal end of current sand-object
-                    # otherwise its a syntax error, but we assume it will be caught by further analysis
+                    # otherwise it is a syntax error, but we assume it will be caught by further analysis
                     break
-        # Once the object is completely parse, check we got all mandatory attributes
+        # Once the object is completely parsed, check we got all mandatory attributes
         for attr_name in syntax[MANDATORY]:
             if attr_name == 'list':
                 if result.list is None:
@@ -243,7 +249,7 @@ class HeaderSyntaxChecker:
         result.char_count = 1
         input = input[1:]
         item_number = 0
-        # Eat input until end or closing backet
+        # Eat input until end or closing bracket
         while input and input[0] != ']':
             item_number += 1
             # items of the list should be sand-object:
@@ -278,10 +284,8 @@ class HeaderSyntaxChecker:
         Returns the corresponding SandValue or raises ParsingStopped.
         The returned SandValue has its attribute char_count indicating how many
         characters where used from input."""
-        # We require the caller to pass some input
-        assert(input)
         result = SandValue()
-        # Most work is done thanks to the regexp associted to this type:
+        # Most work is done thanks to the regexp associated to this type:
         match = regular_expressions[expected_type].match(input)
         if match:
             # Correct value
@@ -325,13 +329,14 @@ class AnticipatedRequestsChecker(HeaderSyntaxChecker):
                         'targetTime': 'DATETIME' } })
 
     def check_syntax(self, input):
-        """Checks the input string conforms to SAND- syntax."""
+        """Checks the input string conforms to SAND-AnticipatedRequests syntax."""
         # Generic checking:
         o = HeaderSyntaxChecker.check_syntax(self, input)
         # Additional checks
         if o:
             if not o.list:
                 self.add_error("At least one request must be specified.")
+        return o
 
 class SharedResourceAllocationChecker(HeaderSyntaxChecker):
     """Class to check a SAND-ResourceAllocation header message."""
@@ -375,6 +380,7 @@ class SharedResourceAllocationChecker(HeaderSyntaxChecker):
                     if self.optional_attributes(obj, syntax) != attributes:
                         self.add_error("Optional attributes are not consistent through the list of operationPoints")
                         break
+        return o
 
 class AcceptedAlternativesChecker(HeaderSyntaxChecker):
     """Class to check a SAND-AcceptedAlternatives header message."""
@@ -398,9 +404,10 @@ class AcceptedAlternativesChecker(HeaderSyntaxChecker):
         if o:
             if not o.list:
                 self.add_error("At least one alternative must be specified.")
+        return o
 
 class AbsoluteDeadlineChecker(HeaderSyntaxChecker):
-    """Class to check a SAND- header message."""
+    """Class to check a SAND-AbsoluteDeadline header message."""
     
     def __init__(self):
         """Build the syntax description for this message"""
@@ -414,6 +421,7 @@ class AbsoluteDeadlineChecker(HeaderSyntaxChecker):
         # Generic checking:
         o = HeaderSyntaxChecker.check_syntax(self, input)
         # No additional checks
+        return o
 
 class MaxRTTChecker(HeaderSyntaxChecker):
     """Class to check a SAND-MaxRTT header message."""
@@ -430,6 +438,7 @@ class MaxRTTChecker(HeaderSyntaxChecker):
         # Generic checking:
         o = HeaderSyntaxChecker.check_syntax(self, input)
         # No additional checks
+        return o
 
 class NextAlternativesChecker(HeaderSyntaxChecker):
     """Class to check a SAND-NextAlternatives header message."""
@@ -453,6 +462,7 @@ class NextAlternativesChecker(HeaderSyntaxChecker):
         if o:
             if not o.list:
                 self.add_error("At least one alternative must be specified.")
+        return o
 
 class ClientCapabilitiesChecker(HeaderSyntaxChecker):
     """Class to check a SAND-ClientCapabilities header message."""
@@ -480,6 +490,7 @@ class ClientCapabilitiesChecker(HeaderSyntaxChecker):
                     self.add_error("supportedMessage should not include reserved code 0")
                 if '12' not in codes:
                     self.add_error("supportedMessage must include code 12 (ClientCapabilities)")
+        return o
 
 class DeliveredAlternativeChecker(HeaderSyntaxChecker):
     """Class to check a SAND-DeliveredAlternative header message."""
@@ -516,8 +527,9 @@ class BwInformationChecker(HeaderSyntaxChecker):
                 maxBW = int(o.maxBandwidth)
                 if maxBW < minBW:
                     self.add_error("The value of maxBandwidth should be greater or equal than minBandwidth.")
+        return o
 
-# This dictionary maps header names to the class to use for checking the value.
+# This dictionary maps header names to an object to use for checking the value.
 # We use lower cased values of header names, since HTTP headers are case-insensitive
 # and so comparison can be made on lowered names.
 header_name_to_checker = {
@@ -531,6 +543,85 @@ header_name_to_checker = {
   'sand-deliveredalternative': DeliveredAlternativeChecker(),
   'sand-bwinformation': BwInformationChecker(),
 }
+
+def check_header(name, value):
+    """Checks a single header, whose name and value are provided.
+    Returns a list of error messages.
+    The returned list is empty if the message is correct."""
+    checker = header_name_to_checker.get(name.lower())
+    if checker:
+        checker.check_syntax(value.strip())
+        result = checker.errors
+    else:
+        result = ['Header name not supported by this version of conformance server.']
+    return result
+
+def check_headers(header_list):
+    """Checks a list of headers found in an HTTP request or response.
+    They may include SAND and other headers.
+    A report on correctness of known SAND headers is returned, as a list of tuples,
+    with header name and [possibly empty] list of errors.
+    Other headers may be considered when they play a role for SAND.
+    For example with DeliveredAlternative message,
+    we check the Warning, ContentLocation and Vary headers."""
+    result = []
+    for name, value in header_list:
+        # generic check
+        # (duplicated code of check_header, because we sometimes need the checker object)
+        checker = header_name_to_checker.get(name.lower())
+        if checker:
+            sand_object = checker.check_syntax(value.strip())
+            errors = checker.errors
+        elif name.lower().startswith('sand-'):
+            errors = ['Header name not supported by this version of conformance server.']
+        else:
+            # Not a SAND specific header
+            continue
+        if name.lower() == 'sand-deliveredalternative':
+            warning = ''
+            location = ''
+            vary = ''
+            # collect headers we expect to find
+            expected_warning = '214 Transformation Applied'
+            expected_vary = 'sand-acceptedalternatives'
+            # Note: here we do not assume that the headers list has grouped
+            #       multiple header occurrences from the HTTP request/response.
+            for n, v in header_list:
+                n = n.lower()
+                if n == 'warning':
+                    # We may have other warnings not related to DeliveredAlternative
+                    # So if we already found the expected one we do not overwrite it
+                    if warning != expected_warning:
+                        warning = v
+                elif n == 'contentlocation':
+                    location = v
+                elif n == 'vary':
+                    # If the expected value was already found in a Vary header,
+                    # ignore others
+                    if vary != expected_vary:
+                        if v == '*':
+                            vary = expected_vary
+                        else:
+                            fields = map(lambda s: s.strip().lower(), v.split(','))
+                            if expected_vary in fields:
+                                vary = expected_vary
+                            else:
+                                vary = 'other'
+            if not warning:
+                errors.append('Mandatory Warning header missing for DeliveredAlternative')
+            elif warning != expected_warning:
+                errors.append('A Warning header with "%s" is expected' % expected_warning)
+            if not location:
+                errors.append('Mandatory ContentLocation header missing for DelivedAlternative.')
+            elif hasattr(sand_object, 'contentLocation'):
+                if sand_object.contentLocation.strip('"') != location: # TODO we may have part of the URL?
+                    errors.append('ContentLocation header and contentLocation@DeliveredAlternative are not consistent.')
+            if not vary:
+                errors.append('Mandatory Vary header missing for DelivedAlternative.')
+            elif vary != expected_vary:
+                errors.append('The Vary header should mention %s for a DeliveredAlternative.' % expected_vary)
+        result.append((name, errors))
+    return result
 
 if __name__ == '__main__':
     # Call this script from the test-vectors directory,
@@ -551,12 +642,11 @@ if __name__ == '__main__':
         ped_tests = glob(os.path.join('ped', match))
         for file_name in status_tests + per_tests + ped_tests:
             with open(file_name) as f:
-                name, input = f.readline().split(':', 1)
-                c = header_name_to_checker[name.lower()]
-                c.check_syntax(input.strip())
-            if c.errors:
-                print 'FAILED', file_name
-                for msg in c.errors:
-                    print '      ', msg
-            else:
-                print 'PASSED', file_name
+                name, value = f.readline().split(':', 1)
+                errors = check_header(name, value)
+                if errors:
+                    print 'FAILED', file_name
+                    for msg in errors:
+                        print '      ', msg
+                else:
+                    print 'PASSED', file_name
