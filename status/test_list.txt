@@ -18,9 +18,6 @@ SharedResourceAllocation-OK-9  Three operation points, weight, pricing strategy
 SharedResourceAllocation-KO-1  Empty list
 SharedResourceAllocation-KO-2  First operationPoint without bandwidth (only quality)
 SharedResourceAllocation-KO-3  Third operationPoint without bandwidth (only minBufferTime)
-SharedResourceAllocation-KO-4  Missing weight for strategy premium-privileged
-SharedResourceAllocation-KO-5  Missing weight for strategy everybody-server
-SharedResourceAllocation-KO-6  Missing weight for strategy weighted
 AcceptedAlternatives-OK-1      Two alternatives, no optional attribute
 AcceptedAlternatives-OK-2      Two alternatives with ranges
 AcceptedAlternatives-OK-3      Two alternatives with bandwidth
