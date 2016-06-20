@@ -153,23 +153,7 @@ class TestTxtPerMessages(unittest.TestCase):
                     self.assertTrue(check_header(header))
                     logging.info("Test : %s OK", message_file)
 
-class TestTxtPedMessages(unittest.TestCase):
-    def test_valid_messages(self):
-        for message_file in glob.glob("../ped/*-OK-*.txt"):
-            with open(message_file) as message:
-                for header in message.readlines():
-                    logging.info("Test : %s ...", message_file)
-                    self.assertFalse(check_header(header))
-                    logging.info("Test : %s OK", message_file)
-  
-    def test_invalid_messages(self):
-        for message_file in glob.glob("../ped/*-KO-*.txt"):
-            with open(message_file) as message:
-                for header in message.readlines():
-                    logging.info("Test : %s ...", message_file)
-                    self.assertTrue(check_header(header))
-                    logging.info("Test : %s OK", message_file)
-
 if __name__ == '__main__':
     testsuite = unittest.TestLoader().loadTestsFromModule(__import__(__name__))
-    unittest.TextTestRunner(verbosity=2).run(testsuite)
+    ret = not unittest.TextTestRunner(verbosity=2).run(testsuite).wasSuccessful()
+    sys.exit(ret)
