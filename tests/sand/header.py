@@ -39,6 +39,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import re
 from UserList import UserList
 
+# Some checks considered as potentially useful are not part of official MPEG conformance.
+# However the code is kept available for those who want to reuse this module
+# in an extended context. The following dictionary can be adapted to this purpose.
+# For strict MPEG conformance all flags should be False.
+extended_checks = {
+    'weight present if strategy requires': False,
+    'operation points have consistent attribute list': False,
+}
+
 # URI regexps taken from
 # http://blog.dieweltistgarnichtso.net/constructing-a-regular-expression-that-matches-uris
 # regexp for the protocol part of an URI:
@@ -53,8 +62,7 @@ regular_expressions = {
     'QUOTEDSTRING': re.compile(r'"(\\"|[^"])*"'),
     'QUOTEDURI': re.compile(r'("%s:(%s|%s)+")|("(%s|%s)+")' % (uri_proto, uri_allowed, uri_encoded, uri_allowed, uri_encoded)),
     'INT': re.compile(r'\d+'),
-    # TODO: do we accept empty start for 0 in a range?
-    'BYTERANGE': re.compile(r'\d+-\d*'),
+    'BYTERANGE': re.compile(r'(\d+-\d*)|(-\d+)'),
     'DATETIME': re.compile(r'\d\d\d\d\d\d\d\dT\d\d\d\d\d\d(\.\d{,6})?Z'),
     'LIST': re.compile(r'\[(\d+(,\d+)*)?\]'),
 }
@@ -199,7 +207,7 @@ class HeaderSyntaxChecker:
                 # Parse the value
                 if right is not None:
                     if right.strip():
-                        value = self.check_value(syntax[attr_name], input[item_length:])
+                        value = self.check_value(syntax[attr_name], input[item_length:], number_text)
                         item_length += value.char_count
                     else:
                         # empty value already signalled, do not parse
@@ -277,7 +285,7 @@ class HeaderSyntaxChecker:
             result.char_count += 1
         return result
     
-    def check_value(self, expected_type, input):
+    def check_value(self, expected_type, input, message_suffix):
         """Performs the syntax check when a sand-value is expected.
         expected_type: the name of the type expected for the value.
         input: string to parse (starts with the value, but may contain more at the end)
@@ -290,6 +298,11 @@ class HeaderSyntaxChecker:
         if match:
             # Correct value
             result.data = match.group(0)
+            # Additional check:
+            if expected_type == 'BYTERANGE':
+                left, right = result.data.split('-')
+                if left and right and int(left) > int(right):
+                    self.add_error("Inconsistent byte range (%s > %s)%s." % (left, right, message_suffix))
         else:
             # Wrong value
             if expected_type == 'DATETIME':
@@ -299,7 +312,7 @@ class HeaderSyntaxChecker:
                 match = datetime_allowed_chars.match(input)
                 if match:
                     result.data = match.group(0)
-            self.add_error("Wrong or missing %s specification." % expected_type)
+            self.add_error("Wrong or missing %s specification%s." % (expected_type, message_suffix))
         result.char_count = len(result.data)
         return result
     
@@ -323,8 +336,8 @@ class AnticipatedRequestsChecker(HeaderSyntaxChecker):
         HeaderSyntaxChecker.__init__(
             self, 
             { MANDATORY: ('list',),
-              'list': { MANDATORY: ('sourceURL', 'targetTime'),
-                        'sourceURL': 'QUOTEDURI',
+              'list': { MANDATORY: ('sourceUrl', 'targetTime'),
+                        'sourceUrl': 'QUOTEDURI',
                         'range': 'BYTERANGE',
                         'targetTime': 'DATETIME' } })
 
@@ -352,7 +365,7 @@ class SharedResourceAllocationChecker(HeaderSyntaxChecker):
                         'minBufferTime': 'INT' },
               'weight': 'INT',
               'allocationStrategy': 'QUOTEDURI',
-              'mpdURL': 'QUOTEDURI' })
+              'mpdUrl': 'QUOTEDURI' })
 
     def check_syntax(self, input):
         """Checks the input string conforms to SAND-ResourceAllocation syntax."""
@@ -362,17 +375,19 @@ class SharedResourceAllocationChecker(HeaderSyntaxChecker):
         if o:
             if not o.list:
                 self.add_error("At least one operation point must be specified.")
-            try:
-                strategy = o.allocationStrategy
-                if strategy in ('"urn:mpeg:dash:sand:allocation:premium-privileged:2016"',
-                                '"urn:mpeg:dash:sand:allocation:everybody-served:2016"',
-                                '"urn:mpeg:dash:sand:allocation:weighted:2016"'):
-                    if not hasattr(o, 'weight'):
-                        self.add_error("Attribute weight is mandatory for strategy %s." % strategy)
-            except AttributeError:
-                # no allocation strategy specified
-                pass
-            if o.list and False: # TODO: if approved check (noted in specification) then remove the False to activate check
+            # checking that values necessary for some strategy are indeed provided
+            if extended_checks['weight present if strategy requires']:
+                try:
+                    strategy = o.allocationStrategy
+                    if strategy in ('"urn:mpeg:dash:sand:allocation:premium-privileged:2016"',
+                                    '"urn:mpeg:dash:sand:allocation:everybody-served:2016"',
+                                    '"urn:mpeg:dash:sand:allocation:weighted:2016"'):
+                        if not hasattr(o, 'weight'):
+                            self.add_error("Attribute weight is mandatory for strategy %s." % strategy)
+                except AttributeError:
+                    # no allocation strategy specified
+                    pass
+            if o.list and extended_checks['operation points have consistent attribute list']:
                 # Check that provided attributes are consistent through the list:
                 syntax = self.syntax['list']
                 attributes = self.optional_attributes(o.list[0], syntax)
@@ -390,8 +405,8 @@ class AcceptedAlternativesChecker(HeaderSyntaxChecker):
         HeaderSyntaxChecker.__init__(
             self, 
             { MANDATORY: ('list',),
-              'list': { MANDATORY: ('sourceURL',),
-                        'sourceURL': 'QUOTEDURI',
+              'list': { MANDATORY: ('sourceUrl',),
+                        'sourceUrl': 'QUOTEDURI',
                         'range': 'BYTERANGE',
                         'bandwidth': 'INT',
                         'deliveryScope': 'INT' } })
@@ -448,8 +463,8 @@ class NextAlternativesChecker(HeaderSyntaxChecker):
         HeaderSyntaxChecker.__init__(
             self,
             { MANDATORY: ('list',),
-              'list': { MANDATORY: ('sourceURL',),
-                        'sourceURL': 'QUOTEDURI',
+              'list': { MANDATORY: ('sourceUrl',),
+                        'sourceUrl': 'QUOTEDURI',
                         'range': 'BYTERANGE',
                         'bandwidth': 'INT',
                         'deliveryScope': 'INT' } })
@@ -499,35 +514,10 @@ class DeliveredAlternativeChecker(HeaderSyntaxChecker):
         """Build the syntax description for this message"""
         HeaderSyntaxChecker.__init__(
             self,
-            { MANDATORY: ('initialURL', 'contentLocation'),
-              'initialURL': 'QUOTEDURI',
+            { MANDATORY: ('initialUrl', 'contentLocation'),
+              'initialUrl': 'QUOTEDURI',
               'contentLocation': 'QUOTEDURI' })
 
-class BwInformationChecker(HeaderSyntaxChecker):
-    """Class to check a SAND-BwInformation header message."""
-    
-    def __init__(self):
-        """Build the syntax description for this message"""
-        HeaderSyntaxChecker.__init__(
-            self,
-            { MANDATORY: (),
-              'minBandwidth': 'INT',
-              'maxBandwidth': 'INT' })
-
-    def check_syntax(self, input):
-        """Checks the input string conforms to SAND-BwInformation syntax."""
-        # Generic checking:
-        o = HeaderSyntaxChecker.check_syntax(self, input)
-        # Additional checks
-        if o:
-            if not hasattr(o, 'minBandwidth') and not hasattr(o, 'maxBandwidth'):
-                self.add_error("At least one of minBandwidth or maxBandwidth should be specified.")
-            if hasattr(o, 'minBandwidth') and hasattr(o, 'maxBandwidth'):
-                minBW = int(o.minBandwidth)
-                maxBW = int(o.maxBandwidth)
-                if maxBW < minBW:
-                    self.add_error("The value of maxBandwidth should be greater or equal than minBandwidth.")
-        return o
 
 # This dictionary maps header names to an object to use for checking the value.
 # We use lower cased values of header names, since HTTP headers are case-insensitive
@@ -541,7 +531,6 @@ header_name_to_checker = {
   'sand-nextalternatives': NextAlternativesChecker(),
   'sand-clientcapabilities': ClientCapabilitiesChecker(),
   'sand-deliveredalternative': DeliveredAlternativeChecker(),
-  'sand-bwinformation': BwInformationChecker(),
 }
 
 def check_header(name, value):

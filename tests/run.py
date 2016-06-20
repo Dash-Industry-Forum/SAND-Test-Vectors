@@ -59,19 +59,27 @@ class TestMpd(unittest.TestCase):
 
     def test_valid_mpds(self):
         for mpd_path in glob.glob("../mpd/*-OK-*.xml"):
-            mpd = etree.parse(mpd_path)
-            self.assertTrue(
-                self.sand_mpd_schema.validate(mpd)
-            and self.sand_mpd_schematron.validate(mpd))
-            logging.info("Test succesful : %s", mpd_path)
+            try:
+                mpd = etree.parse(mpd_path)
+                self.assertTrue(
+                    self.sand_mpd_schema.validate(mpd)
+                and self.sand_mpd_schematron.validate(mpd))
+                logging.info("Test succesful : %s", mpd_path)
+            except Exception as e:
+                logging.error("Test : %s KO", mpd_path)
+                raise type(e)(e.message + " %s" % mpd_path)
 
     def test_invalid_mpds(self):
         for mpd_path in glob.glob("../mpd/*-KO-*.xml"):
-            mpd = etree.parse(mpd_path)
-            self.assertFalse(
-                self.sand_mpd_schema.validate(mpd)
-            and self.sand_mpd_schematron.validate(mpd))
-            logging.info("Test succesful : %s", mpd_path)
+            try:
+                mpd = etree.parse(mpd_path)
+                self.assertFalse(
+                    self.sand_mpd_schema.validate(mpd)
+                and self.sand_mpd_schematron.validate(mpd))
+                logging.info("Test succesful : %s", mpd_path)
+            except Exception as e:
+                logging.error("Test : %s KO", mpd_path)
+                raise type(e)(e.message + " %s" % mpd_path)
 
 class TestXmlPerMessages(unittest.TestCase):
     def setUp(self):
@@ -79,15 +87,23 @@ class TestXmlPerMessages(unittest.TestCase):
 
     def test_valid_messages(self):
         for message in glob.glob("../per/*-OK-*.xml"):
-            logging.info("Test : %s ...", message)
-            self.assertTrue(self.validator.from_file(message))
-            logging.info("Test : %s OK", message)
+            try:
+                logging.info("Test : %s ...", message)
+                self.assertTrue(self.validator.from_file(message))
+                logging.info("Test : %s OK", message)
+            except Exception as e:
+                logging.error("Test : %s KO", message)
+                raise type(e)(e.message + " %s" % message)
   
     def test_invalid_messages(self):
         for message in glob.glob("../per/*-KO-*.xml"):
-            logging.info("Test : %s ...", message)
-            self.assertFalse(self.validator.from_file(message))
-            logging.info("Test : %s OK", message)
+            try:
+                logging.info("Test : %s ...", message)
+                self.assertFalse(self.validator.from_file(message))
+                logging.info("Test : %s OK", message)
+            except Exception as e:
+                logging.error("Test : %s KO", message)
+                raise type(e)(e.message + " %s" % message)
 
 class TestXmlMetricsMessages(unittest.TestCase):
     def setUp(self):
@@ -95,28 +111,42 @@ class TestXmlMetricsMessages(unittest.TestCase):
 
     def test_valid_messages(self):
         for message in glob.glob("../metrics/*-OK-*.xml"):
-            logging.info("Test : %s ...", message)
-            self.assertTrue(self.validator.from_file(message))
-            logging.info("Test : %s OK", message)
+            try:
+                logging.info("Test : %s ...", message)
+                self.assertTrue(self.validator.from_file(message))
+                logging.info("Test : %s OK", message)
+            except Exception as e:
+                logging.error("Test : %s KO", message)
+                raise type(e)(e.message + " %s" % message)
   
     def test_invalid_messages(self):
         for message in glob.glob("../metrics/*-KO-*.xml"):
-            logging.info("Test : %s ...", message)
-            self.assertFalse(self.validator.from_file(message))
-            logging.info("Test : %s OK", message)
+            try:
+                logging.info("Test : %s ...", message)
+                self.assertFalse(self.validator.from_file(message))
+                logging.info("Test : %s OK", message)
+            except Exception as e:
+                logging.error("Test : %s KO", message)
+                raise type(e)(e.message + " %s" % message)
 
-def check_header(header):
+def is_header_valid(header):
+    ret = False
+
     match = re.search("([^:]+):(.+)", header)
     name = match.group(1).strip()
     value = match.group(2).strip()
     checker = sand.header.header_name_to_checker.get(name.lower())
     if checker:
         checker.check_syntax(value)
-        return checker.errors
+        if not checker.errors:
+            ret = True
+        else:
+            logging.error(checker.errors)
     else:
         logging.warning(("Header %s not supported by this " 
                          "version of conformance server"),
                         name) 
+    return ret
         
 
 class TestTxtStatussMessages(unittest.TestCase):
@@ -124,34 +154,50 @@ class TestTxtStatussMessages(unittest.TestCase):
         for message_file in glob.glob("../status/*-OK-*.txt"):
             with open(message_file) as message:
                 for header in message.readlines():
-                    logging.info("Test : %s ...", message_file)
-                    self.assertFalse(check_header(header))
-                    logging.info("Test : %s OK", message_file)
+                    try:
+                        logging.info("Test : %s ...", message_file)
+                        self.assertTrue(is_header_valid(header))
+                        logging.info("Test : %s OK", message_file)
+                    except Exception as e:
+                        logging.error("Test : %s KO", message_file)
+                        raise type(e)(e.message + " %s" % message_file)
   
     def test_invalid_messages(self):
         for message_file in glob.glob("../status/*-KO-*.txt"):
             with open(message_file) as message:
                 for header in message.readlines():
-                    logging.info("Test : %s ...", message_file)
-                    self.assertTrue(check_header(header))
-                    logging.info("Test : %s OK", message_file)
+                    try:
+                        logging.info("Test : %s ...", message_file)
+                        self.assertFalse(is_header_valid(header))
+                        logging.info("Test : %s OK", message_file)
+                    except Exception as e:
+                        logging.error("Test : %s KO", message_file)
+                        raise type(e)(e.message + " %s" % message_file)
 
 class TestTxtPerMessages(unittest.TestCase):
     def test_valid_messages(self):
         for message_file in glob.glob("../per/*-OK-*.txt"):
             with open(message_file) as message:
                 for header in message.readlines():
-                    logging.info("Test : %s ...", message_file)
-                    self.assertFalse(check_header(header))
-                    logging.info("Test : %s OK", message_file)
+                    try:
+                        logging.info("Test : %s ...", message_file)
+                        self.assertTrue(is_header_valid(header))
+                        logging.info("Test : %s OK", message_file)
+                    except Exception as e:
+                        logging.error("Test : %s KO", message_file)
+                        raise type(e)(e.message + " %s" % message_file)
   
     def test_invalid_messages(self):
         for message_file in glob.glob("../per/*-KO-*.txt"):
             with open(message_file) as message:
                 for header in message.readlines():
-                    logging.info("Test : %s ...", message_file)
-                    self.assertTrue(check_header(header))
-                    logging.info("Test : %s OK", message_file)
+                    try:
+                        logging.info("Test : %s ...", message_file)
+                        self.assertFalse(is_header_valid(header))
+                        logging.info("Test : %s OK", message_file)
+                    except Exception as e:
+                        logging.error("Test : %s KO", message_file)
+                        raise type(e)(e.message + " %s" % message_file)
 
 if __name__ == '__main__':
     testsuite = unittest.TestLoader().loadTestsFromModule(__import__(__name__))
