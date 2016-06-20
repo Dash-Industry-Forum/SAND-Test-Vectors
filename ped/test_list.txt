@@ -1,4 +1,1 @@
-BwInformation-OK-1  Both min and max specified
-BwInformation-OK-2  Only min specified
-BwInformation-OK-3  Both max specified
-BwInformation-KO-1  Unexpected attribute name
+# Currently ped has no message

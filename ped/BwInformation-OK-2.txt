@@ -1,1 +1,0 @@
-SAND-BwInformation: minBandwidth=640000
