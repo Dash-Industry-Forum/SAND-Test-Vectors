@@ -13,7 +13,7 @@
     <xs:complexType>
       <xs:attribute name="id" type="xs:string"/>
       <xs:attribute name="schemeIdUri" type="xs:anyURI" use="required"/>
-      <xs:attribute name="endpoint" type="xs:anyURI" use="required"/>
+      <xs:attribute name="endpoint" type="xs:anyURI"/>
       <xs:anyAttribute namespace="##other" processContents="lax"/>
     </xs:complexType>
   </xs:element>

@@ -26,5 +26,5 @@
     </AdaptationSet>
   </Period>
   <!-- SAND Channel -->
-  <sand:Channel schemeIdUri="urn:mpeg:dash:sand:channel:websocket:2016" endpoint="wss://cdn3.example.com"/>
+  <sand:Channel schemeIdUri="urn:mpeg:dash:sand:channel:http:2016" endpoint="https://cdn3.example.com?client_id=abcdef"/>
 </MPD>
