@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-04-08T09:20:52-08:00">
-  <ResourceStatus messageId="1234" status="cached"></ResourceStatus>
+  <ResourceStatus messageId="1234">
+    <ResourceURLInfo baseUrl="cdn1.com/movie" status="cached"/>
+  </ResourceStatus>
 </SANDMessage>

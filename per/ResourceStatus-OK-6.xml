@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-02-21T11:20:52-08:00">
-  <ResourceStatus messageId="1234" status="cached" repId="rep-1" reason="Very popular content"></ResourceStatus>
+  <ResourceStatus messageId="1234">
+    <ResourceRepresentationInfo repId="high-quality" status="cached" reason="Very popular content"/>
+  </ResourceStatus>
 </SANDMessage>

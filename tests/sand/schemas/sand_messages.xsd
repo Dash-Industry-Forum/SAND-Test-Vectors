@@ -156,14 +156,27 @@
   <!-- ResourceStatus Type -->
   <xs:complexType name="ResourceStatusType">
     <xs:complexContent>
-    <xs:extension base="SANDMessageType">
-      <xs:attribute name="baseUrl" type="xs:anyURI"/>
-      <xs:attribute name="repId" type="StringNoWhitespaceType"/>
-      <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
-      <xs:attribute name="reason" type="xs:string"/>
-      <!--xs:assert test="(@baseUrl and not(@repId)) or (not(@baseUrl) and @repId)"/-->
-    </xs:extension>
+      <xs:extension base="SANDMessageType">
+	 <xs:choice minOccurs="1" maxOccurs="unbounded">
+           <xs:element name="ResourceURLInfo" type="ResourceURLInfoType"/>
+	   <xs:element name="ResourceRepresentationInfo" type="ResourceRepresentationInfoType"/>
+        </xs:choice>
+      </xs:extension>
     </xs:complexContent>
+  </xs:complexType>
+  
+  <!-- ResourceURLInfo Type -->
+  <xs:complexType name="ResourceURLInfoType">
+    <xs:attribute name="baseUrl" type="xs:anyURI"/>
+    <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
+    <xs:attribute name="reason" type="xs:string"/>
+  </xs:complexType>
+
+  <!-- ResourceRepresentationInfo Type -->
+  <xs:complexType name="ResourceRepresentationInfoType">
+    <xs:attribute name="repId" type="StringNoWhitespaceType"/>
+    <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
+    <xs:attribute name="reason" type="xs:string"/>
   </xs:complexType>
 
   <!-- ResourceStatus status enumeration -->

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SANDMessage xmlns="urn:mpeg:dash:schema:sandmessage:2016" senderId="abc1234" generationTime="2016-04-08T09:20:52-08:00">
+  <ResourceStatus messageId="1234">
+    <ResourceURLInfo baseUrl="cdn1.com/movie1" status="cached"/>
+    <ResourceURLInfo baseUrl="cdn1.com/movie2" status="available"/>
+    <ResourceRepresentationInfo repId="low" status="unavailable" reason="Quality standing not met"/>
+    <ResourceRepresentationInfo repId="high" status="cached" reason="High demand"/>
+  </ResourceStatus>
+</SANDMessage>
