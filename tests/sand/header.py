@@ -496,15 +496,17 @@ class ClientCapabilitiesChecker(HeaderSyntaxChecker):
         o = HeaderSyntaxChecker.check_syntax(self, input)
         # Additional checks
         if o:
-            if hasattr(o, 'supportedMessage') and hasattr(o, 'messageSetUri'):
-                self.add_error("Only one of supportedMessage or messageSetUri should be specified.")
             if hasattr(o, 'supportedMessage'):
-                found = False
                 codes = o.supportedMessage[1:-1].split(',')
                 if '0' in codes:
                     self.add_error("supportedMessage should not include reserved code 0")
-                if '12' not in codes:
+                # Currently the only defined messageSetURI includes all values
+                # thus we assume if it is present that 12 can be omitted from supportedMessages
+                # When new messageSets will be defined, refinement would be useful.
+                if '12' not in codes and not hasattr(o, 'messageSetUri'):
                     self.add_error("supportedMessage must include code 12 (ClientCapabilities)")
+            elif not hasattr(o, 'messageSetUri'):
+                self.add_error("At least one of supportedMessage or messageSetUri should be specified.")
         return o
 
 class DeliveredAlternativeChecker(HeaderSyntaxChecker):
