@@ -8,5 +8,10 @@
         At least one of the QoS metrics shall be present in the message.
       </assert>
     </rule>
+    <rule context="sand:AvailabilityTimeOffset">
+      <assert test="@repId or @baseUrl">
+        At least one of the QoS metrics shall be present in the message.
+      </assert>
+    </rule>
   </pattern>
 </schema>
