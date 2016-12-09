@@ -4,7 +4,6 @@
   elementFormDefault="qualified"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns="urn:mpeg:dash:schema:sandmessage:2016">
-  <!-- future xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1" -->
 
   <xs:annotation>
     <xs:appinfo>SAND Messages</xs:appinfo>
@@ -167,14 +166,14 @@
   
   <!-- ResourceURLInfo Type -->
   <xs:complexType name="ResourceURLInfoType">
-    <xs:attribute name="baseUrl" type="xs:anyURI"/>
+    <xs:attribute name="baseUrl" type="xs:anyURI" use="required"/>
     <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
     <xs:attribute name="reason" type="xs:string"/>
   </xs:complexType>
 
   <!-- ResourceRepresentationInfo Type -->
   <xs:complexType name="ResourceRepresentationInfoType">
-    <xs:attribute name="repId" type="StringNoWhitespaceType"/>
+    <xs:attribute name="repId" type="StringNoWhitespaceType" use="required"/>
     <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
     <xs:attribute name="reason" type="xs:string"/>
   </xs:complexType>
@@ -257,7 +256,6 @@
       <xs:attribute name="repId" type="StringNoWhitespaceType"/>
       <xs:attribute name="guaranteedThroughput" type="xs:unsignedInt" use="required"/>
       <xs:attribute name="percentage" type="PercentageType"/>
-      <!--xs:assert test="(@baseUrl and not(@repId)) or (not(@baseUrl) and @repId)"/-->
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
@@ -277,7 +275,6 @@
       <xs:attribute name="baseUrl" type="xs:anyURI"/>
       <xs:attribute name="repId" type="StringNoWhitespaceType"/>
       <xs:attribute name="offset" type="xs:unsignedInt" use="required"/>
-      <!--xs:assert test="(@baseUrl and not(@repId)) or (not(@baseUrl) and @repId)"/-->
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>

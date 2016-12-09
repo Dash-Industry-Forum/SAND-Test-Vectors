@@ -166,14 +166,14 @@
   
   <!-- ResourceURLInfo Type -->
   <xs:complexType name="ResourceURLInfoType">
-    <xs:attribute name="baseUrl" type="xs:anyURI"/>
+    <xs:attribute name="baseUrl" type="xs:anyURI" use="required"/>
     <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
     <xs:attribute name="reason" type="xs:string"/>
   </xs:complexType>
 
   <!-- ResourceRepresentationInfo Type -->
   <xs:complexType name="ResourceRepresentationInfoType">
-    <xs:attribute name="repId" type="StringNoWhitespaceType"/>
+    <xs:attribute name="repId" type="StringNoWhitespaceType" use="required"/>
     <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
     <xs:attribute name="reason" type="xs:string"/>
   </xs:complexType>
