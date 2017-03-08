@@ -48,7 +48,7 @@
 
   <!-- SAND message base Type -->
   <xs:complexType name="SANDMessageType">
-    <xs:attribute name="messageId" type="xs:unsignedInt" use="required"/>
+    <xs:attribute name="messageId" type="xs:unsignedInt"/>
     <xs:attribute name="validityTime" type="xs:dateTime"/>
   </xs:complexType>
 
@@ -166,14 +166,14 @@
   
   <!-- ResourceURLInfo Type -->
   <xs:complexType name="ResourceURLInfoType">
-    <xs:attribute name="baseUrl" type="xs:anyURI" use="required"/>
+    <xs:attribute name="baseUrl" type="xs:anyURI"/>
     <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
     <xs:attribute name="reason" type="xs:string"/>
   </xs:complexType>
 
   <!-- ResourceRepresentationInfo Type -->
   <xs:complexType name="ResourceRepresentationInfoType">
-    <xs:attribute name="repId" type="StringNoWhitespaceType" use="required"/>
+    <xs:attribute name="repId" type="StringNoWhitespaceType"/>
     <xs:attribute name="status" type="ResourceStatusTypeStatusType" use="required"/>
     <xs:attribute name="reason" type="xs:string"/>
   </xs:complexType>
@@ -294,17 +294,18 @@
   <!-- DaneCapabilities Type -->
   <xs:complexType name="DaneCapabilitiesType">
     <xs:complexContent>
-      <xs:extension base="SANDMessageType">
-	<xs:choice>
-          <xs:sequence>
-            <xs:element name="SupportedMessage" type="xs:unsignedInt" minOccurs="1" maxOccurs="unbounded"/>
-          </xs:sequence>
-          <xs:element name="MessageSetUri" type="xs:anyURI"/>
-        </xs:choice>
-      </xs:extension>
+    <xs:extension base="SANDMessageType">
+      <xs:sequence>
+        <xs:element name="SupportedMessage" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:attribute name="messageType" type="xs:unsignedInt" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="messageSetUri" type="xs:anyURI"/>
+    </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-
 
   <!-- Metrics as defined in Annex D of ISO/IEC 23009-1 -->
   <!-- NOTE the naming convention complies with the keys defined in Annex D
