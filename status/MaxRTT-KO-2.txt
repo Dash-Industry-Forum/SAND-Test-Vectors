@@ -1,0 +1,1 @@
+SAND-MaxRTT: senderId="toto",maxRTT=2345,generationTime=20151011T175303Z,messageId=123,validityTime=20161011T175303Z
