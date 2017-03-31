@@ -61,6 +61,7 @@ uri_encoded = r'%[A-Fa-f0-9]{2}'
 regular_expressions = {
     'QUOTEDSTRING': re.compile(r'"(\\"|[^"])*"'),
     'QUOTEDURI': re.compile(r'("%s:(%s|%s)+")|("(%s|%s)+")' % (uri_proto, uri_allowed, uri_encoded, uri_allowed, uri_encoded)),
+    'QUOTEDURN': re.compile(r'("urn:(%s|%s)+")' % (uri_allowed, uri_encoded)),
     'INT': re.compile(r'\d+'),
     'BYTERANGE': re.compile(r'(\d+-\d*)|(-\d+)'),
     'DATETIME': re.compile(r'\d\d\d\d\d\d\d\dT\d\d\d\d\d\d(\.\d{,6})?Z'),
@@ -119,10 +120,29 @@ class HeaderSyntaxChecker:
     - syntax: a dictionary describing expected structure and types
     - errors: a list of error messages found during parsing"""
 
+    # Attributes that may appear as part of the enveloppe.
+    # Note: it is not currently clearly stated in the spec how these are used with HTTP headers
+    #       since the enveloppe is supposed to be shared by multiple messages
+    #       and we put one SAND message into one HTTP HEADER
+    # We assume that they will be inserted in every header where needed (introducing duplication)
+    enveloppe_attributes = { MANDATORY: (),
+                             'senderId': 'QUOTEDSTRING',
+                             'generationTime' : 'DATETIME' }
+    
+    # Attributes that may belong to any message
+    common_attributes = { MANDATORY: (),
+                          'messageId' : 'INT',
+                          'validityTime': 'DATETIME' }
+
     def __init__(self, syntax):
-        """Constructor. Just store the syntax descriptor."""
+        """Constructor.
+        Store the syntax descriptor.
+        Initialize internal attributes used during parsing."""
         self.syntax = syntax
         self.errors = []
+        # The following flags are used to check rule in 8.2.3 on attributes ordering
+        self.enveloppe_done = False
+        self.common_done = False
 
     def add_error(self, msg):
         """Adds the msg to the list of errors."""
@@ -138,8 +158,19 @@ class HeaderSyntaxChecker:
         If parsing went to the end correctly or with non fatal errors,
         returns the SandObject describing the found content."""
         self.clear_errors()
+        self.enveloppe_done = False
+        self.common_done = False
+        syntax = {} # start a new dictionary (do not modify existing ones)
+        # Build a syntax description including all possible attributes
+        # (note: the calls to update will overwrite MANDATORY entry each time)
+        syntax.update(self.enveloppe_attributes)
+        syntax.update(self.common_attributes)
+        syntax.update(self.syntax)
+        # build MANDATORY key at the end, since updates are overwriting it:
+        mandatory = self.syntax[MANDATORY] + self.enveloppe_attributes[MANDATORY] + self.common_attributes[MANDATORY]
+        syntax[MANDATORY] = mandatory
         try:
-            result = self.check_object(self.syntax, input, first_level=True)
+            result = self.check_object(syntax, input, first_level=True)
         except ParsingStopped:
             result = None
         return result
@@ -216,6 +247,18 @@ class HeaderSyntaxChecker:
                 # Attributes must be unique
                 if hasattr(result, attr_name):
                     self.add_error("sand-attribute %s should occur only once%s." % (attr_name, number_text))
+                # Enveloppe and common attributes must appear before others
+                # (but nothing says in the spec that enveloppe should be before common attributes)
+                if attr_name in self.enveloppe_attributes:
+                    if self.enveloppe_done or not first_level:
+                        self.add_error("Enveloppe attributes (%s) should appear first in the message." % attr_name)
+                elif attr_name in self.common_attributes:
+                    if self.common_done or not first_level:
+                        self.add_error("Common attributes (%s) should appear first in the message." % attr_name)
+                else:
+                    # If we see another attribute, then enveloppe+common is done
+                    self.enveloppe_done = True
+                    self.common_done = True
                 setattr(result, attr_name, value.data)
             # Now that one item has been parsed, prepare for the next
             # move to remaining input:
@@ -364,7 +407,7 @@ class SharedResourceAllocationChecker(HeaderSyntaxChecker):
                         'quality': 'INT',
                         'minBufferTime': 'INT' },
               'weight': 'INT',
-              'allocationStrategy': 'QUOTEDURI',
+              'allocationStrategy': 'QUOTEDURN',
               'mpdUrl': 'QUOTEDURI' })
 
     def check_syntax(self, input):
@@ -482,13 +525,21 @@ class NextAlternativesChecker(HeaderSyntaxChecker):
 class ClientCapabilitiesChecker(HeaderSyntaxChecker):
     """Class to check a SAND-ClientCapabilities header message."""
     
+    known_urns = { # QUOTEDXXX parsing leaves the " in the value, so we include them here
+        '"urn:mpeg:dash:sand:messageset:all:2016"': map(str, range(1, 22)),
+    }
+
     def __init__(self):
         """Build the syntax description for this message"""
+        # Consistency check: know_urns should never reference reserved code 0
+        for codes in self.known_urns.values():
+            assert('0' not in codes)
+
         HeaderSyntaxChecker.__init__(
             self,
             { MANDATORY: (),
               'supportedMessage': 'LIST',
-              'messageSetUri': 'QUOTEDURI' })
+              'messageSetUri': 'QUOTEDURN' })
 
     def check_syntax(self, input):
         """Checks the input string conforms to SAND-ClientCapabilities syntax."""
@@ -496,17 +547,30 @@ class ClientCapabilitiesChecker(HeaderSyntaxChecker):
         o = HeaderSyntaxChecker.check_syntax(self, input)
         # Additional checks
         if o:
+            # Collect all supported codes from both types of parameters
+            supported_codes = set() # collects the identifier codes of supported messages
+            if hasattr(o, 'messageSetUri'):
+                if o.messageSetUri in self.known_urns:
+                    # add known identifiers to the set:
+                    for code in self.known_urns[o.messageSetUri]:
+                        supported_codes.add(code)
+                else:
+                    self.add_error("messageSetUri %s is not a known urn" % o.messageSetUri)
+                    # assuming the urn is defined elsewhere and has a consistent content,
+                    # we add the code '12' here to avoid issuing a new error message below,
+                    # (this additional error would be misleading if the urn is correct)
+                    supported_codes.add('12')
             if hasattr(o, 'supportedMessage'):
-                codes = o.supportedMessage[1:-1].split(',')
-                if '0' in codes:
-                    self.add_error("supportedMessage should not include reserved code 0")
-                # Currently the only defined messageSetURI includes all values
-                # thus we assume if it is present that 12 can be omitted from supportedMessages
-                # When new messageSets will be defined, refinement would be useful.
-                if '12' not in codes and not hasattr(o, 'messageSetUri'):
-                    self.add_error("supportedMessage must include code 12 (ClientCapabilities)")
-            elif not hasattr(o, 'messageSetUri'):
+                for code in o.supportedMessage[1:-1].split(','):
+                    supported_codes.add(code)
+            # Do we have some values?
+            if not hasattr(o, 'supportedMessage') and not hasattr(o, 'messageSetUri'):
                 self.add_error("At least one of supportedMessage or messageSetUri should be specified.")
+            # Check specific codes
+            if '0' in supported_codes:
+                self.add_error("supportedMessage should not include reserved code 0")
+            if '12' not in supported_codes:
+                self.add_error("At least one of the parameters must include code 12 (ClientCapabilities)")
         return o
 
 class DeliveredAlternativeChecker(HeaderSyntaxChecker):
@@ -516,9 +580,16 @@ class DeliveredAlternativeChecker(HeaderSyntaxChecker):
         """Build the syntax description for this message"""
         HeaderSyntaxChecker.__init__(
             self,
-            { MANDATORY: ('initialUrl', 'contentLocation'),
+            { MANDATORY: ('contentLocation',),
               'initialUrl': 'QUOTEDURI',
               'contentLocation': 'QUOTEDURI' })
+
+    def check_syntax(self, input):
+        """Checks the input string conforms to SAND-DeliveredAlternative syntax."""
+        # Generic checking:
+        o = HeaderSyntaxChecker.check_syntax(self, input)
+        # No additional checks
+        return o
 
 
 # This dictionary maps header names to an object to use for checking the value.
@@ -603,12 +674,12 @@ def check_headers(header_list):
             elif warning != expected_warning:
                 errors.append('A Warning header with "%s" is expected' % expected_warning)
             if not location:
-                errors.append('Mandatory ContentLocation header missing for DelivedAlternative.')
+                errors.append('Mandatory ContentLocation header missing for DeliveredAlternative.')
             elif hasattr(sand_object, 'contentLocation'):
                 if sand_object.contentLocation.strip('"') != location: # TODO we may have part of the URL?
                     errors.append('ContentLocation header and contentLocation@DeliveredAlternative are not consistent.')
             if not vary:
-                errors.append('Mandatory Vary header missing for DelivedAlternative.')
+                errors.append('Mandatory Vary header missing for DeliveredAlternative.')
             elif vary != expected_vary:
                 errors.append('The Vary header should mention %s for a DeliveredAlternative.' % expected_vary)
         result.append((name, errors))
