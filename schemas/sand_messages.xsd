@@ -135,7 +135,7 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
   <!-- ClientCapabilities Type -->
   <xs:complexType name="ClientCapabilitiesType">
     <xs:complexContent>
@@ -151,7 +151,7 @@
     </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+ 
   <!-- ResourceStatus Type -->
   <xs:complexType name="ResourceStatusType">
     <xs:complexContent>
@@ -163,7 +163,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  
+
   <!-- ResourceURLInfo Type -->
   <xs:complexType name="ResourceURLInfoType">
     <xs:attribute name="baseUrl" type="xs:anyURI"/>
@@ -200,16 +200,22 @@
     </xs:complexContent>
   </xs:complexType>
 
-<!-- Resource Type -->
+  <!-- Resource Type -->
   <xs:complexType name="ResourceType">
     <xs:simpleContent>
       <xs:extension base="xs:anyURI">
-        <xs:attribute name="bytes" type="xs:string"/>
+        <xs:attribute name="bytes">
+          <xs:simpleType>
+            <xs:restriction base="xs:string">
+              <xs:pattern value="(([0-9]+\-[0-9]*)|(\-[0-9]+))(,(([0-9]+\-[0-9]*)|(\-[0-9]+)))*"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
 
-<!-- DaneResourceStatus status enumeration -->
+  <!-- DaneResourceStatus status enumeration -->
   <xs:simpleType name="DaneResourceStatusTypeStatusType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="cached"/>
