@@ -3,12 +3,11 @@ language: python
 python:
   - "2.7"
 
-install:
+before_install:
   - cd tests/
-  - pip install -r requirements.txt
 
-before_script:
-  - cd tests/ 
+install:
+  - pip install -r requirements.txt
 
 script:
   - python run.py -v
