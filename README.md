@@ -1,6 +1,6 @@
-# SAND test vectors
+# SAND Test Vectors
 
-[![build status](https://gitlab.com/MPEG_SAND/test-vectors/badges/master/build.svg)](https://gitlab.com/MPEG_SAND/test-vectors/commits/master)
+[![Build Status](https://travis-ci.org/edrthomas/SAND-Test-Vectors.svg?branch=master)](https://travis-ci.org/edrthomas/SAND-Test-Vectors)
 
 This repository collects test vectors for the ISO/IEC 23009-5 Server And Network assisted DASH standard.
 
