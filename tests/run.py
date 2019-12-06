@@ -34,7 +34,7 @@ class TestMpd(unittest.TestCase):
         """
         Test that valid MPD test vectors are indeed conformant.
         """
-        for mpd_path in glob.glob("../mpd/*-OK-*.xml"):
+        for mpd_path in glob.glob("../mpd/*/*-OK-*.mpd"):
             try:
                 mpd = etree.parse(mpd_path)
                 self.assertTrue(
@@ -49,7 +49,7 @@ class TestMpd(unittest.TestCase):
         """
         Test that invalid MPD test vectors are indeed not conformant.
         """
-        for mpd_path in glob.glob("../mpd/*-KO-*.xml"):
+        for mpd_path in glob.glob("../mpd/*/*-KO-*.mpd"):
             try:
                 mpd = etree.parse(mpd_path)
                 self.assertFalse(
