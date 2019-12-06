@@ -43,6 +43,7 @@ class TestMpd(unittest.TestCase):
                 logging.info("Test succesful : %s", mpd_path)
             except Exception as error:
                 logging.error("Test : %s KO", mpd_path)
+                logging.error("%s", error.message)
                 raise type(error)(error.message + " %s" % mpd_path)
 
     def test_invalid_mpds(self):
@@ -58,6 +59,7 @@ class TestMpd(unittest.TestCase):
                 logging.info("Test succesful : %s", mpd_path)
             except Exception as error:
                 logging.error("Test : %s KO", mpd_path)
+                logging.error("%s", error.message)
                 raise type(error)(error.message + " %s" % mpd_path)
 
 class TestXmlPerMessages(unittest.TestCase):
