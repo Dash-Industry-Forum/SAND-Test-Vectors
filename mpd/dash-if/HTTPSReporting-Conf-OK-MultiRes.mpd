@@ -31,8 +31,8 @@
   </AdaptationSet>
  </Period>
   <Metrics metrics="BufferLevel">
-    <Reporting schemeIdUri="urn:mpeg:dash:sand:channel:2016" value="channel-reporting"/>
     <Range duration="PT10S"/>
+    <Reporting schemeIdUri="urn:mpeg:dash:sand:channel:2016" value="channel-reporting"/>
   </Metrics>
   <!-- SAND Channel -->
   <sand:Channel id="channel-reporting" schemeIdUri="urn:mpeg:dash:sand:channel:http:2016" endpoint="https://sand-http-conf-server.herokuapp.com/metrics"/>
